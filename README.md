@@ -30,6 +30,14 @@ Serve `dist/` with any static HTTP server, for example `python3 -m http.server 8
 
 Static hosting must serve the files without rewriting asset requests to HTML. The manifest uses relative URLs. When changing bundled assets, bump `CACHE` in `dist/sw.js` so installed users receive the new bundle. Publish all files atomically.
 
+## GitHub Pages deployment
+
+The workflow in `.github/workflows/pages.yml` runs the tests and syntax checks, then publishes only `dist/` on pushes to `main`. It can also be run manually from the Actions tab.
+
+One-time repository setup: open **Settings → Pages → Build and deployment → Source**, and select **GitHub Actions**. If an earlier run failed before this setting was enabled, rerun it from Actions.
+
+The project URL is `https://myfoodcard.github.io/app/` once deployment succeeds. Manifest URLs and assets are relative; the offline cache is scoped to the hosting path. The GitHub Pages website is public. Profiles remain in each visitor's browser; account login and cloud sync are not implemented yet.
+
 ## Privacy and offline behavior
 
 Profile data is in `localStorage` under `myfoodcard.profile.v1`. The code does not transmit profile data or coordinates. The hosting provider still receives normal page/asset requests. Browser geolocation itself may use the browser/OS location provider. No location is persisted by this app.

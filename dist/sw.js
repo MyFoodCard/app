@@ -1,4 +1,5 @@
-const CACHE='myfoodcard-v1';
+const CACHE_PREFIX='myfoodcard-'+encodeURIComponent(new URL(self.registration.scope).pathname)+'-';
+const CACHE=CACHE_PREFIX+'v2';
 const FILES=['./','./index.html','./styles.css','./app.js','./domain.js','./translations.js','./countries.json','./icon.svg','./manifest.webmanifest'];
 const urls=FILES.map(file=>new URL(file,self.registration.scope).href);
 self.addEventListener('install',event=>event.waitUntil((async()=>{
@@ -8,7 +9,7 @@ self.addEventListener('install',event=>event.waitUntil((async()=>{
 })()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{
   const names=await caches.keys();
-  await Promise.all(names.filter(name=>name.startsWith('myfoodcard-')&&name!==CACHE).map(name=>caches.delete(name)));
+  await Promise.all(names.filter(name=>name.startsWith(CACHE_PREFIX)&&name!==CACHE).map(name=>caches.delete(name)));
   await self.clients.claim();
 })()));
 self.addEventListener('fetch',event=>{

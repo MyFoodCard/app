@@ -33,10 +33,12 @@ test('point-in-polygon respects holes and multipart geometry',()=>{
   assert.equal(countryAt(2,2,[f]),f);assert.equal(countryAt(5,5,[f]),null);assert.equal(inRing(20,20,outer),false);
   assert.equal(countryAt(2,2,[{...f,geometry:{type:'MultiPolygon',coordinates:[[outer,hole]]}}])?.code,'TEST');
 });
-test('service worker caches every resource and serves card shell/assets without network',async()=>{
-  const listeners={},entries=new Map(),scope='https://example.test/';
-  const cache={addAll:async requests=>{for(const req of requests){const url=new URL(req.url);const path=url.pathname==='/'?'index.html':url.pathname.slice(1);const content=await readFile(new URL('../dist/'+path,import.meta.url),'utf8');entries.set(req.url,new Response(content));}},match:async request=>entries.get(typeof request==='string'?request:request.url)?.clone()};
-  const context={URL,Request,Response,Promise,caches:{open:async()=>cache,keys:async()=>['myfoodcard-old','unrelated'],delete:async name=>assert.equal(name,'myfoodcard-old')},fetch:async()=>{throw new Error('Offline');},self:{location:new URL(scope),registration:{scope},clients:{claim:async()=>{}},skipWaiting:async()=>{},addEventListener:(name,callback)=>{listeners[name]=callback;}}};
+for(const basePath of ['/', '/app/']) test('offline shell and translations work under '+basePath,async()=>{
+  const listeners={},entries=new Map(),scope='https://example.test'+basePath;
+  const oldCache='myfoodcard-'+encodeURIComponent(basePath)+'-v1';
+  const otherAppCache='myfoodcard-'+encodeURIComponent('/another-app/')+'-v1';
+  const cache={addAll:async requests=>{for(const req of requests){const url=new URL(req.url);const path=url.pathname.slice(basePath.length)||'index.html';const content=await readFile(new URL('../dist/'+path,import.meta.url),'utf8');entries.set(req.url,new Response(content));}},match:async request=>entries.get(typeof request==='string'?request:request.url)?.clone()};
+  const context={URL,Request,Response,Promise,caches:{open:async()=>cache,keys:async()=>[oldCache,otherAppCache,'unrelated'],delete:async name=>assert.equal(name,oldCache)},fetch:async()=>{throw new Error('Offline');},self:{location:new URL(scope),registration:{scope},clients:{claim:async()=>{}},skipWaiting:async()=>{},addEventListener:(name,callback)=>{listeners[name]=callback;}}};
   vm.runInNewContext(await readFile(new URL('../dist/sw.js',import.meta.url),'utf8'),context);
   let promise;listeners.install({waitUntil:p=>{promise=p;}});await promise;
   assert.equal(entries.size,9);
@@ -49,3 +51,13 @@ test('service worker caches every resource and serves card shell/assets without 
   entries.delete(scope+'countries.json');listeners.message({data:{type:'CHECK_CACHE'},ports:[{postMessage:value=>{ready=value.ready;}}],waitUntil:p=>{promise=p;}});await promise;assert.equal(ready,false);
 });
 
+
+test('installation paths stay within the GitHub Pages project',async()=>{
+  const manifest=JSON.parse(await readFile(new URL('../dist/manifest.webmanifest',import.meta.url),'utf8'));
+  const manifestUrl='https://myfoodcard.github.io/app/manifest.webmanifest';
+  const start=new URL(manifest.start_url,manifestUrl);
+  assert.equal(start.pathname,'/app/');
+  assert.equal(new URL(manifest.scope,manifestUrl).pathname,'/app/');
+  assert.equal(new URL(manifest.id,start).pathname,'/app/');
+  for(const icon of manifest.icons)assert.ok(new URL(icon.src,manifestUrl).pathname.startsWith('/app/'));
+});
