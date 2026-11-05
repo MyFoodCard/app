@@ -9,7 +9,8 @@ A mobile-first restaurant card for dietary requirements and food allergies. The 
 - Personal profile saved locally in the browser; no application account or server database.
 - Separate allergy and dietary sections. Fifteen allergen categories, including flaxseed/linseed; vegan, vegetarian, halal, kosher, gluten-free, no pork and no alcohol requirements.
 - English, Slovak, Czech, German, French, Spanish, Arabic (RTL) and Thai card packs bundled offline.
-- Large restaurant presentation, print/PDF through the browser, JSON profile export/import.
+- Compact restaurant card and readable presentation view; print/PDF through the browser and JSON profile export/import.
+- System-aware light/dark appearance with a saved manual override. Printed cards always use the light palette.
 - Opt-in device location and offline point-in-polygon country lookup. The user confirms a suggested language; unsupported countries never silently default to a supposed local language.
 - Service worker pre-caches the complete application and map. Wait for the **Ready offline** indicator before travel. Install through the browser's add-to-home-screen flow.
 
@@ -40,7 +41,7 @@ The project URL is `https://myfoodcard.github.io/app/` once deployment succeeds.
 
 ## Privacy and offline behavior
 
-Profile data is in `localStorage` under `myfoodcard.profile.v1`. The code does not transmit profile data or coordinates. The hosting provider still receives normal page/asset requests. Browser geolocation itself may use the browser/OS location provider. No location is persisted by this app.
+Profile data is in `localStorage` under `myfoodcard.profile.v1`. Appearance is stored separately under `myfoodcard.theme.v1` and is not included in profile exports. The code does not transmit profile data or coordinates. The hosting provider still receives normal page/asset requests. Browser geolocation itself may use the browser/OS location provider. No location is persisted by this app.
 
 The first visit needs connectivity. Browser storage can be cleared or evicted; export a backup. Private hosting may require a sign-in to open the initial online page. The app shell is cached locally and should not be treated as an authentication-protected vault.
 
@@ -52,6 +53,7 @@ Location lookup uses generalized Natural Earth 1:110m polygons. Coastal location
 
 - `dist/app.js`: UI, storage, import/export, location workflow.
 - `dist/domain.js`: profile validation and geography logic.
+- `dist/theme.js`: first-paint theme, system preference changes and saved appearance.
 - `dist/translations.js`: card language catalog.
 - `dist/sw.js`: offline cache lifecycle.
 - `dist/countries.json`: compact Natural Earth geometry.

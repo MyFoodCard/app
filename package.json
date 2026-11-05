@@ -1,1 +1,10 @@
-{"name":"myfoodcard","version":"0.1.0","private":true,"type":"module","scripts":{"test":"node --test test/*.test.js","check":"node --check dist/app.js && node --check dist/domain.js && node --check dist/translations.js && node --check dist/sw.js"}}
+{
+  "name": "myfoodcard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "check": "node --check dist/app.js && node --check dist/domain.js && node --check dist/translations.js && node --check dist/sw.js && node --check dist/theme.js"
+  }
+}
