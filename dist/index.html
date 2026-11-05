@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#173d35"><meta name="description" content="Your food needs, in the local language. Make a personal restaurant card for your allergies and dietary requirements, available offline.">
+<title>MyFoodCard · Your food needs, in the local language</title>
+<link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="manifest" href="./manifest.webmanifest"><link rel="stylesheet" href="./styles.css">
+<script type="module" src="./app.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to your card</a>
+<header class="site-header">
+  <a class="brand" href="./" aria-label="MyFoodCard home"><img src="./icon.svg" alt="" width="39" height="39"><span>myfoodcard<span class="brand-dot">.</span></span></a>
+  <div class="header-right"><span class="prototype">Early preview</span><span id="offline-status" class="status" role="status"><span class="status-dot"></span>Preparing offline</span></div>
+</header>
+<main id="main">
+<section class="intro">
+<div><p class="eyebrow">A LITTLE CARD. A WORLD OF UNDERSTANDING.</p><h1>Your food needs.<br><em>In the local language.</em></h1><p class="intro-copy">For the things you can’t eat. And the things you choose not to.<br>Make yourself understood, wherever you take a seat.</p></div>
+<div class="intro-note"><span class="note-orbit" aria-hidden="true">↗</span><span>Made for your next<br>seat at the table.</span></div>
+</section>
+<div class="mobile-tabs" role="group" aria-label="Workspace view"><button id="edit-tab" aria-pressed="true">01 &nbsp; Your preferences</button><button id="card-tab" aria-pressed="false">02 &nbsp; Your card</button></div>
+<div class="workspace">
+<aside class="editor" id="editor">
+ <div class="section-top"><span class="step">01</span><h2>Make it yours</h2><span id="save-status" class="save-status" role="status">On this device</span></div>
+ <p class="muted editor-intro">A few details. A little more peace of mind.</p>
+ <label class="field-label" for="profile-name">Your name <span>optional</span></label><input id="profile-name" maxlength="60" autocomplete="off" placeholder="How should we call you?">
+ <fieldset><legend>How you eat</legend><p class="field-hint">Your choices, values and requirements.</p><div id="diet-options" class="chips"></div></fieldset>
+ <fieldset class="allergy-fieldset"><legend>What you’re allergic to</legend><p class="field-hint">Shown separately and clearly on your card.</p><div id="allergen-options" class="chips allergy-chips"></div></fieldset>
+ <label class="check-row"><input id="cross-contact" type="checkbox" checked><span><strong>Ask to avoid cross-contact</strong><small>Include shared utensils, surfaces and cooking oil when allergies are selected.</small></span></label>
+ <div class="local-note"><span aria-hidden="true">⌁</span><p><strong>Yours, on your device.</strong><br>Your profile stays in this browser. No account needed inside the app.</p></div>
+ <div class="profile-actions"><button id="export-button" class="text-button" type="button">Export profile ↗</button><label class="text-button import-label" for="import-file" tabindex="0" role="button">Import profile</label><input type="file" id="import-file" accept=".json,application/json" hidden><button id="reset-button" class="text-button quiet" type="button">Clear</button></div>
+ <p id="form-message" class="message" role="status"></p>
+</aside>
+<section class="preview" id="preview" aria-label="Restaurant card preview">
+ <div class="section-top"><span class="step">02</span><h2>Ready for the table</h2><span class="card-count" id="selected-count">Your personal card</span></div>
+ <div class="language-bar"><div class="language-field"><span aria-hidden="true">◎</span><div><label for="card-language">CARD LANGUAGE</label><select id="card-language"></select></div></div><button id="location-button" class="location-button" title="Suggest a language using your location"><span aria-hidden="true">⌖</span> Use my location</button></div>
+ <div id="location-result" class="location-result" role="status" hidden></div>
+ <div id="sample-banner" class="sample-banner" hidden><span>Sample card · vegan + flaxseed allergy</span><button id="exit-sample" class="text-button">Back to my card</button></div>
+ <div class="card-stage">
+  <article id="food-card" class="food-card" aria-label="Your translated restaurant card"></article>
+  <div class="card-shadow" aria-hidden="true"></div>
+ </div>
+ <div class="card-actions"><button id="present-button" class="button primary" disabled><span aria-hidden="true">⛶</span> Show to restaurant</button><button id="print-button" class="button secondary" disabled title="Print or save as PDF"><span aria-hidden="true">↗</span> Print card</button></div>
+ <div class="preview-caption"><span aria-hidden="true">✧</span><p>One card. Eight languages. No connection needed after setup.</p></div>
+ <details class="translation-note"><summary>About these translations</summary><p>This early preview uses draft translations, not professionally reviewed translations. Confirm wording with a fluent speaker before relying on a card for an allergy. Always discuss ingredients and preparation with restaurant staff.</p></details>
+</section>
+</div>
+<footer><span>myfoodcard<span class="brand-dot">.</span></span><span>A little clarity. Wherever you eat.</span><button id="about-button" class="text-button">How it works</button></footer>
+</main>
+<dialog id="present-dialog" aria-label="Restaurant presentation"><div class="present-tools"><span>Show this screen to restaurant staff</span><button id="close-present" class="button secondary">Close ✕</button></div><div id="present-card"></div></dialog>
+<dialog id="about-dialog" aria-labelledby="about-title"><button id="close-about" class="close-button" aria-label="Close information">✕</button><p class="eyebrow">MYFOODCARD</p><h2 id="about-title">A small card.<br>A clearer conversation.</h2><ol><li><strong>Make it yours.</strong> Choose your requirements and allergies. Edits save automatically in this browser.</li><li><strong>Choose the language.</strong> Select one yourself or request a location-based suggestion. Your coordinates aren’t sent to our servers.</li><li><strong>Show your card.</strong> Open the large presentation view for the restaurant, or print a copy.</li></ol><p>Wait for “Ready offline” before travelling. You can add this app to your home screen from your browser. Offline access needs an initial online visit and depends on your browser retaining saved data. Export a backup before clearing browser data.</p><p>Eight card languages: English, Slovak, Czech, German, French, Spanish, Arabic and Thai. Profile controls are in English. Location suggestions are approximate; you always choose the final language.</p><p class="muted">Location boundaries: Natural Earth (public domain). Translations are drafts awaiting professional review.</p></dialog>
+<noscript><p class="noscript">Enable JavaScript to configure and translate your card.</p></noscript>
+</body>
+</html>
