@@ -3,6 +3,7 @@ import {translations} from './translations.js';
 import {createShareUrl,readSharedProfile} from './sharing.js';
 import {cardMarkup} from './card.js';
 import {PROFILE_KEY,LEGACY_PROFILE_KEYS,loadProfile} from './profile-storage.js';
+import {bindPickerDismissal} from './picker-events.js';
 const $=id=>document.getElementById(id);
 const escape=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 let profile=emptyProfile(), sample=false, sharedProfile=null, offlineReady=false;
@@ -52,20 +53,21 @@ function createIngredientPicker(root){
     open=false;results.hidden=true;browse.setAttribute('aria-expanded','false');
     browse.textContent='Browse all';status.textContent='';
   }
-  function add(key){
+  function add(key,returnFocus=false){
     profile=addIngredient(profile,group,key);search.value='';
-    foodPickers.forEach(picker=>picker.sync());edit();search.focus();
+    foodPickers.forEach(picker=>picker.sync());edit();
+    if(returnFocus)search.focus({preventScroll:true});else{search.blur();close();}
     status.textContent=english.ingredients[key]+' added to '+label+'.';
   }
   search.addEventListener('focus',show);
   search.addEventListener('input',show);
   search.addEventListener('keydown',event=>{
     if(event.key==='ArrowDown'){event.preventDefault();show();results.querySelector('button')?.focus();}
-    if(event.key==='Enter'){event.preventDefault();const keys=choices();if(keys.length===1)add(keys[0]);else show();}
+    if(event.key==='Enter'){event.preventDefault();const keys=choices();if(keys.length===1)add(keys[0],true);else show();}
     if(event.key==='Escape'){event.preventDefault();close();}
   });
-  browse.addEventListener('click',()=>{if(open)close();else{search.value='';show();search.focus();}});
-  results.addEventListener('click',event=>{const button=event.target.closest('[data-add]');if(button)add(button.dataset.add);});
+  browse.addEventListener('click',()=>{if(open)close();else{search.value='';show();}});
+  results.addEventListener('click',event=>{const button=event.target.closest('[data-add]');if(button)add(button.dataset.add,event.detail===0);});
   results.addEventListener('keydown',event=>{
     if(event.key==='Escape'){event.preventDefault();search.focus();close();return;}
     if(!['ArrowDown','ArrowUp'].includes(event.key))return;
@@ -75,11 +77,11 @@ function createIngredientPicker(root){
   selected.addEventListener('click',event=>{
     const button=event.target.closest('[data-remove]');if(!button)return;
     const key=button.dataset.remove;profile[group]=profile[group].filter(item=>item!==key);
-    foodPickers.forEach(picker=>picker.sync());edit();search.focus();
+    foodPickers.forEach(picker=>picker.sync());edit();
+    if(event.detail===0)search.focus({preventScroll:true});else{search.blur();close();}
     status.textContent=english.ingredients[key]+' removed from '+label+'.';
   });
-  root.addEventListener('focusout',event=>{if(!root.contains(event.relatedTarget))close();});
-  document.addEventListener('pointerdown',event=>{if(!root.contains(event.target))close();});
+  bindPickerDismissal(root,close);
   return {sync,close};
 }
 function renderCard(){
