@@ -34,17 +34,19 @@ test('point-in-polygon respects holes and multipart geometry',()=>{
   assert.equal(countryAt(2,2,[{...f,geometry:{type:'MultiPolygon',coordinates:[[outer,hole]]}}])?.code,'TEST');
 });
 for(const basePath of ['/', '/app/']) test('offline shell and translations work under '+basePath,async()=>{
+  let networkRequests=0;
   const listeners={},entries=new Map(),scope='https://example.test'+basePath;
   const oldCache='myfoodcard-'+encodeURIComponent(basePath)+'-v1';
   const otherAppCache='myfoodcard-'+encodeURIComponent('/another-app/')+'-v1';
   const cache={addAll:async requests=>{for(const req of requests){const url=new URL(req.url);const path=url.pathname.slice(basePath.length)||'index.html';const content=await readFile(new URL('../dist/'+path,import.meta.url),'utf8');entries.set(req.url,new Response(content));}},match:async request=>entries.get(typeof request==='string'?request:request.url)?.clone()};
-  const context={URL,Request,Response,Promise,caches:{open:async()=>cache,keys:async()=>[oldCache,otherAppCache,'unrelated'],delete:async name=>assert.equal(name,oldCache)},fetch:async()=>{throw new Error('Offline');},self:{location:new URL(scope),registration:{scope},clients:{claim:async()=>{}},skipWaiting:async()=>{},addEventListener:(name,callback)=>{listeners[name]=callback;}}};
+  const context={URL,Request,Response,Promise,caches:{open:async()=>cache,keys:async()=>[oldCache,otherAppCache,'unrelated'],delete:async name=>assert.equal(name,oldCache)},fetch:async()=>{networkRequests++;throw new Error('Offline');},self:{location:new URL(scope),registration:{scope},clients:{claim:async()=>{}},skipWaiting:async()=>{},addEventListener:(name,callback)=>{listeners[name]=callback;}}};
   vm.runInNewContext(await readFile(new URL('../dist/sw.js',import.meta.url),'utf8'),context);
   let promise;listeners.install({waitUntil:p=>{promise=p;}});await promise;
   assert.equal(entries.size,10);
   listeners.activate({waitUntil:p=>{promise=p;}});await promise;
   let response;listeners.fetch({request:{method:'GET',url:scope,mode:'navigate'},respondWith:p=>{response=p;}});
   assert.match(await (await response).text(),/MyFoodCard/);
+  assert.equal(networkRequests,0,'navigation must use the same cached bundle as its scripts');
   listeners.fetch({request:new Request(scope+'translations.js'),respondWith:p=>{response=p;}});
   assert.match(await (await response).text(),/بذور الكتان/);
   listeners.fetch({request:new Request(scope+'theme.js'),respondWith:p=>{response=p;}});

@@ -1,5 +1,5 @@
 const CACHE_PREFIX='myfoodcard-'+encodeURIComponent(new URL(self.registration.scope).pathname)+'-';
-const CACHE=CACHE_PREFIX+'v4';
+const CACHE=CACHE_PREFIX+'v5';
 const FILES=['./','./index.html','./styles.css','./app.js','./theme.js','./domain.js','./translations.js','./countries.json','./icon.svg','./manifest.webmanifest'];
 const urls=FILES.map(file=>new URL(file,self.registration.scope).href);
 self.addEventListener('install',event=>event.waitUntil((async()=>{
@@ -18,8 +18,9 @@ self.addEventListener('fetch',event=>{
   if(url.origin!==self.location.origin)return;
   if(event.request.mode==='navigate'){
     event.respondWith((async()=>{
-      try{return await fetch(event.request);}
-      catch{return (await caches.open(CACHE)).match(new URL('./index.html',self.registration.scope).href);}
+      // Serve HTML and assets from the same installed bundle during an update.
+      const cached=await (await caches.open(CACHE)).match(new URL('./index.html',self.registration.scope).href);
+      return cached||fetch(event.request);
     })());return;
   }
   if(urls.includes(url.href))event.respondWith((async()=>{

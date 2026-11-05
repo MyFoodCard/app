@@ -4,6 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#173d35"><meta name="description" content="Your food needs, in the local language. Make a personal restaurant card for your allergies and dietary requirements, available offline.">
 <title>MyFoodCard · Your food needs, in the local language</title>
+<script>
+// Update independently of app initialization, including older cached app bundles.
+if ('serviceWorker' in navigator) {
+  const wasControlled = Boolean(navigator.serviceWorker.controller);
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (wasControlled) window.location.reload();
+  }, {once: true});
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+</script>
 <script src="./theme.js"></script>
 <link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="manifest" href="./manifest.webmanifest"><link rel="stylesheet" href="./styles.css">
 <script type="module" src="./app.js"></script>
