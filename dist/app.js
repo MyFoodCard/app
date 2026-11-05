@@ -1,52 +1,86 @@
-import {COMMON_ALLERGENS,MORE_ALLERGENS,INGREDIENTS,DIETS,LANGUAGES,emptyProfile,cleanProfile,requirementCount,toggleItem,countryAt,languageSuggestions} from './domain.js';
+import {DIETS,LANGUAGES,emptyProfile,cleanProfile,requirementCount,searchIngredients,addIngredient,toggleItem,countryAt,languageSuggestions} from './domain.js';
 import {translations} from './translations.js';
 import {createShareUrl,readSharedProfile} from './sharing.js';
 import {cardMarkup} from './card.js';
-import {PROFILE_KEY,loadProfile} from './profile-storage.js';
+import {PROFILE_KEY,LEGACY_PROFILE_KEYS,loadProfile} from './profile-storage.js';
 const $=id=>document.getElementById(id);
 const escape=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 let profile=emptyProfile(), sample=false, sharedProfile=null, offlineReady=false;
 try{const loaded=loadProfile(localStorage);profile=loaded.profile;if(loaded.saveFailed){$('save-status').textContent='Not saved';$('form-message').textContent='Your previous profile was loaded, but this browser cannot save the updated profile. Export it to keep a copy.';}}
 catch{$('form-message').textContent='Saved data could not be read. It has not been changed. Import a supported backup or create a new profile below.';}
 const english=translations.en;
-function activeProfile(){return sharedProfile||(sample?{...profile,allergens:['flaxseed'],diets:['vegan'],intolerances:[],crossContact:true}:profile);}
+const foodPickers=[];
+function activeProfile(){return sharedProfile||(sample?{...profile,mustAvoid:['flaxseed'],diets:['vegan'],avoidIfPossible:[],crossContact:true}:profile);}
 function buildOptions(){
-  for(const [type,keys,root] of [['diets',DIETS,'diet-options'],['allergens',COMMON_ALLERGENS,'allergen-options'],['allergens',MORE_ALLERGENS,'more-allergen-options']]){
-    $(root).innerHTML=keys.map(key=>'<label class="chip"><input type="checkbox" data-group="'+type+'" aria-label="'+escape(type==='diets'?english.diets[key].label:english.allergens[key])+'" value="'+key+'"><span>'+escape(type==='diets'?english.diets[key].label:english.allergens[key])+'</span></label>').join('');
-  }
+  $('diet-options').innerHTML=DIETS.map(key=>'<label class="chip"><input type="checkbox" data-group="diets" aria-label="'+escape(english.diets[key].label)+'" value="'+key+'"><span>'+escape(english.diets[key].label)+'</span></label>').join('');
+  for(const root of document.querySelectorAll('[data-food-group]'))foodPickers.push(createIngredientPicker(root));
   $('card-language').innerHTML=LANGUAGES.map(code=>'<option value="'+code+'">'+escape(translations[code].native)+' · '+escape(translations[code].english)+'</option>').join('');
 }
 function syncEditor(){
   $('cross-contact').checked=profile.crossContact;
   $('card-language').value=activeProfile().language;
   document.querySelectorAll('[data-group]').forEach(input=>input.checked=profile[input.dataset.group].includes(input.value));
-  if(profile.allergens.some(key=>MORE_ALLERGENS.includes(key)))$('more-allergens').open=true;
-  filterAllergens();renderIntoleranceEditor();
+  foodPickers.forEach(picker=>picker.sync());
 }
 function save(){
   try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));$('save-status').textContent='Saved on device';return true;}
   catch{$('save-status').textContent='Not saved';$('form-message').textContent='This browser cannot save your profile. Export it to keep a copy.';return false;}
 }
-function filterAllergens(){
-  const query=$('allergen-search').value.trim().toLowerCase();let matches=0,moreMatches=0;
-  document.querySelectorAll('[data-group="allergens"]').forEach(input=>{
-    const match=english.allergens[input.value].toLowerCase().includes(query);
-    input.closest('.chip').hidden=!match;
-    if(match){matches++;if(MORE_ALLERGENS.includes(input.value))moreMatches++;}
+function createIngredientPicker(root){
+  const group=root.dataset.foodGroup, label=group==='mustAvoid'?'Must avoid':'Avoid if possible';
+  const search=root.querySelector('input[type="search"]'), selected=root.querySelector('.selected-ingredients');
+  const results=root.querySelector('.ingredient-results'), status=root.querySelector('[role="status"]'), browse=root.querySelector('.browse-ingredients');
+  let open=false;
+  function choices(){
+    return searchIngredients(search.value,english.ingredients).filter(key=>!profile[group].includes(key)&&(group==='mustAvoid'||!profile.mustAvoid.includes(key)));
+  }
+  function renderResults(){
+    const keys=choices();
+    results.hidden=!open||!keys.length;browse.setAttribute('aria-expanded',String(open));
+    browse.textContent=open?'Close list':'Browse all';
+    results.innerHTML=keys.map(key=>'<li><button type="button" data-add="'+key+'" aria-label="Add '+escape(english.ingredients[key])+' to '+label+'"><span>'+escape(english.ingredients[key])+'</span><small>'+(group==='mustAvoid'&&profile.avoidIfPossible.includes(key)?'Move here':'＋')+'</small></button></li>').join('');
+    status.textContent=open?(keys.length?keys.length+(keys.length===1?' ingredient available':' ingredients available'):search.value.trim()?'No ingredients to add. Try another name or check your selected items.':'All ingredients are already selected.') : '';
+  }
+  function sync(){
+    selected.innerHTML=profile[group].map(key=>'<li><button type="button" data-remove="'+key+'" aria-label="Remove '+escape(english.ingredients[key])+' from '+label+'"><span>'+escape(english.ingredients[key])+'</span><span aria-hidden="true">×</span></button></li>').join('');
+    root.querySelector('.selection-empty').hidden=profile[group].length>0;
+    renderResults();
+  }
+  function show(){open=true;renderResults();}
+  function close(){
+    // Blur can fire while result nodes are being replaced. Hide without rebuilding them.
+    open=false;results.hidden=true;browse.setAttribute('aria-expanded','false');
+    browse.textContent='Browse all';status.textContent='';
+  }
+  function add(key){
+    profile=addIngredient(profile,group,key);search.value='';
+    foodPickers.forEach(picker=>picker.sync());edit();search.focus();
+    status.textContent=english.ingredients[key]+' added to '+label+'.';
+  }
+  search.addEventListener('focus',show);
+  search.addEventListener('input',show);
+  search.addEventListener('keydown',event=>{
+    if(event.key==='ArrowDown'){event.preventDefault();show();results.querySelector('button')?.focus();}
+    if(event.key==='Enter'){event.preventDefault();const keys=choices();if(keys.length===1)add(keys[0]);else show();}
+    if(event.key==='Escape'){event.preventDefault();close();}
   });
-  if(query&&moreMatches)$('more-allergens').open=true;
-  $('more-allergens').hidden=Boolean(query&&!moreMatches);
-  const selected=profile.allergens.filter(key=>MORE_ALLERGENS.includes(key)).length;
-  $('more-allergens-label').textContent='More allergens'+(selected?' · '+selected+' selected':'');
-  $('allergen-search-status').textContent=query?(matches?matches+' matching choices':'No matching allergen. This list is not exhaustive.'):'';
-}
-function renderIntoleranceEditor(){
-  const selected=$('intolerance-ingredient').value;
-  const keys=[...INGREDIENTS].sort((a,b)=>english.ingredients[a].localeCompare(english.ingredients[b],'en'));
-  $('intolerance-ingredient').innerHTML='<option value="">Choose an ingredient…</option>'+keys.map(key=>'<option value="'+key+'"'+(profile.allergens.includes(key)||profile.intolerances.some(item=>item.ingredient===key)?' disabled':'')+'>'+escape(english.ingredients[key])+'</option>').join('');
-  if(selected&&!profile.allergens.includes(selected)&&!profile.intolerances.some(item=>item.ingredient===selected))$('intolerance-ingredient').value=selected;
-  $('add-intolerance').disabled=!$('intolerance-ingredient').value;
-  $('intolerance-list').innerHTML=profile.intolerances.map(item=>'<li class="intolerance-row"><label for="avoid-'+item.ingredient+'">'+escape(english.ingredients[item.ingredient])+'</label><select id="avoid-'+item.ingredient+'" data-avoidance="'+item.ingredient+'" aria-label="Avoidance for '+escape(english.ingredients[item.ingredient])+'"><option value="must"'+(item.avoidance==='must'?' selected':'')+'>Must avoid</option><option value="prefer"'+(item.avoidance==='prefer'?' selected':'')+'>Avoid if possible</option></select><button class="text-button" data-remove-intolerance="'+item.ingredient+'" aria-label="Remove '+escape(english.ingredients[item.ingredient])+' intolerance">Remove</button></li>').join('');
+  browse.addEventListener('click',()=>{if(open)close();else{search.value='';show();search.focus();}});
+  results.addEventListener('click',event=>{const button=event.target.closest('[data-add]');if(button)add(button.dataset.add);});
+  results.addEventListener('keydown',event=>{
+    if(event.key==='Escape'){event.preventDefault();search.focus();close();return;}
+    if(!['ArrowDown','ArrowUp'].includes(event.key))return;
+    event.preventDefault();const buttons=[...results.querySelectorAll('button')],index=buttons.indexOf(event.target);
+    buttons[(index+(event.key==='ArrowDown'?1:-1)+buttons.length)%buttons.length]?.focus();
+  });
+  selected.addEventListener('click',event=>{
+    const button=event.target.closest('[data-remove]');if(!button)return;
+    const key=button.dataset.remove;profile[group]=profile[group].filter(item=>item!==key);
+    foodPickers.forEach(picker=>picker.sync());edit();search.focus();
+    status.textContent=english.ingredients[key]+' removed from '+label+'.';
+  });
+  root.addEventListener('focusout',event=>{if(!root.contains(event.relatedTarget))close();});
+  document.addEventListener('pointerdown',event=>{if(!root.contains(event.target))close();});
+  return {sync,close};
 }
 function renderCard(){
   const p=activeProfile(),t=translations[p.language];
@@ -97,40 +131,9 @@ $('share-button').addEventListener('click',async()=>{
   }
 });
 $('close-share').addEventListener('click',()=>$('share-dialog').close());
-document.querySelectorAll('[data-group]').forEach(input=>input.addEventListener('change',()=>{
-  const group=input.dataset.group;profile[group]=toggleItem(profile[group],input.value,input.checked);
-  if(group==='allergens'){
-    const overlap=input.checked&&profile.intolerances.some(item=>item.ingredient===input.value);
-    if(overlap){profile.intolerances=profile.intolerances.filter(item=>item.ingredient!==input.value);$('intolerance-status').textContent=english.ingredients[input.value]+' is now shown as an allergy. Its intolerance entry was removed.';}
-    renderIntoleranceEditor();filterAllergens();
-  }
-  edit();
+document.querySelectorAll('[data-group="diets"]').forEach(input=>input.addEventListener('change',()=>{
+  profile.diets=toggleItem(profile.diets,input.value,input.checked);edit();
 }));
-$('allergen-search').addEventListener('input',filterAllergens);
-$('intolerance-ingredient').addEventListener('change',()=>$('add-intolerance').disabled=!$('intolerance-ingredient').value);
-$('add-intolerance').addEventListener('click',()=>{
-  const ingredient=$('intolerance-ingredient').value;
-  if(!INGREDIENTS.includes(ingredient)||profile.allergens.includes(ingredient)||profile.intolerances.some(item=>item.ingredient===ingredient))return;
-  profile.intolerances.push({ingredient,avoidance:'must'});
-  $('intolerance-status').textContent=english.ingredients[ingredient]+' added as “Must avoid”. You can change the instruction below.';
-  renderIntoleranceEditor();edit();$('avoid-'+ingredient).focus();
-});
-$('intolerance-list').addEventListener('change',event=>{
-  const ingredient=event.target.dataset.avoidance;
-  const item=profile.intolerances.find(item=>item.ingredient===ingredient);
-  if(item&&['must','prefer'].includes(event.target.value)){
-    item.avoidance=event.target.value;
-    $('intolerance-status').textContent=english.ingredients[ingredient]+' set to “'+(item.avoidance==='must'?'Must avoid':'Avoid if possible')+'”.';
-    edit();
-  }
-});
-$('intolerance-list').addEventListener('click',event=>{
-  const button=event.target.closest('[data-remove-intolerance]');if(!button)return;
-  const ingredient=button.dataset.removeIntolerance;
-  profile.intolerances=profile.intolerances.filter(item=>item.ingredient!==ingredient);
-  $('intolerance-status').textContent=english.ingredients[ingredient]+' removed.';
-  renderIntoleranceEditor();edit();$('intolerance-ingredient').focus();
-});
 $('cross-contact').addEventListener('change',event=>{profile.crossContact=event.target.checked;edit();});
 $('card-language').addEventListener('change',event=>{if(sharedProfile)sharedProfile.language=event.target.value;else{profile.language=event.target.value;save();}renderCard();$('location-result').hidden=true;});
 $('exit-sample').addEventListener('click',()=>{sample=false;renderCard();});
@@ -146,11 +149,11 @@ $('print-button').addEventListener('click',()=>window.print());
 $('about-button').addEventListener('click',()=>$('about-dialog').showModal());
 $('close-about').addEventListener('click',()=>$('about-dialog').close());
 $('reset-button').addEventListener('click',()=>{
-  if(!confirm('Clear your saved dietary requirements, allergies and intolerances on this device?'))return;
+  if(!confirm('Clear your saved dietary requirements and ingredients on this device?'))return;
   const language=profile.language;profile={...emptyProfile(),language};sample=false;
-  const saved=save();syncEditor();renderCard();$('intolerance-status').textContent='';
+  const saved=save();syncEditor();renderCard();foodPickers.forEach(picker=>picker.close());
   if(saved){
-    try{localStorage.removeItem('myfoodcard.profile.v1');$('form-message').textContent='Profile cleared on this device.';}
+    try{for(const key of LEGACY_PROFILE_KEYS)localStorage.removeItem(key);$('form-message').textContent='Profile cleared on this device.';}
     catch{$('form-message').textContent='The current profile was cleared, but an older backup could not be removed. Clear this site’s browser data to remove it.';}
   }
 });
@@ -165,10 +168,10 @@ $('import-file').addEventListener('change',async event=>{
   try{
     if(file.size>20000)throw new Error('Choose a MyFoodCard profile smaller than 20 KB.');
     const parsed=JSON.parse(await file.text());
-    if(!parsed||![1,2].includes(parsed.version)||!Array.isArray(parsed.allergens)||!Array.isArray(parsed.diets))throw new Error('This is not a supported MyFoodCard profile.');
+    if(!parsed||![1,2,3].includes(parsed.version)||!Array.isArray(parsed.diets))throw new Error('This is not a supported MyFoodCard profile.');
     const imported=cleanProfile(parsed);
     if(!confirm('Replace your saved profile with the profile from this file?'))return;
-    profile=imported;sample=false;const saved=save();syncEditor();renderCard();$('intolerance-status').textContent='';
+    profile=imported;sample=false;const saved=save();syncEditor();renderCard();foodPickers.forEach(picker=>picker.close());
     if(saved)$('form-message').textContent='Profile imported. Please review every selection.';
   }catch(error){$('form-message').textContent=error instanceof SyntaxError?'This file is not valid JSON.':error.message;}
   finally{event.target.value='';}

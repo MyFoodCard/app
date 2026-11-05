@@ -2,40 +2,57 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
-import {ALLERGENS,INGREDIENTS,DIETS,LANGUAGES,emptyProfile,cleanProfile,countryAt,languageSuggestions,inRing} from '../dist/domain.js';
+import {ALLERGENS,INGREDIENTS,DIETS,LANGUAGES,emptyProfile,cleanProfile,searchIngredients,addIngredient,countryAt,languageSuggestions,inRing} from '../dist/domain.js';
 import {translations} from '../dist/translations.js';
 const {countries}=JSON.parse(await readFile(new URL('../dist/countries.json',import.meta.url),'utf8'));
 test('a new profile does not invent a dietary or medical requirement',()=>{
-  const p=emptyProfile();assert.deepEqual(p.allergens,[]);assert.deepEqual(p.diets,[]);assert.deepEqual(p.intolerances,[]);assert.equal(Object.hasOwn(p,'name'),false);
+  const p=emptyProfile();assert.deepEqual(p.mustAvoid,[]);assert.deepEqual(p.avoidIfPossible,[]);assert.deepEqual(p.diets,[]);assert.equal(Object.hasOwn(p,'name'),false);
 });
-test('legacy imports migrate without losing known requirements or retaining names',()=>{
-  const p=cleanProfile({version:1,name:'x'.repeat(100),allergens:['flaxseed','flaxseed'],diets:['vegan'],language:'xx',crossContact:false});
-  assert.deepEqual(p.allergens,['flaxseed']);assert.deepEqual(p.diets,['vegan']);assert.equal(Object.hasOwn(p,'name'),false);assert.equal(p.language,'en');assert.equal(p.crossContact,false);
-  assert.equal(p.version,2);assert.deepEqual(p.intolerances,[]);
-  assert.throws(()=>cleanProfile({version:3}));assert.throws(()=>cleanProfile(null));assert.throws(()=>cleanProfile([]));
+test('version 1 allergies migrate to Must avoid without retaining names',()=>{
+  const p=cleanProfile({version:1,name:'Legacy name',allergens:['flaxseed','flaxseed'],diets:['vegan'],language:'xx',crossContact:false});
+  assert.deepEqual(p,{...emptyProfile(),mustAvoid:['flaxseed'],diets:['vegan'],crossContact:false});
+  assert.throws(()=>cleanProfile({version:4}));assert.throws(()=>cleanProfile(null));assert.throws(()=>cleanProfile([]));
 });
-test('unsupported requirements fail instead of silently disappearing on import',()=>{
-  for(const version of [1,2])for(const field of ['allergens','diets']){
-    assert.throws(()=>cleanProfile({...emptyProfile(),version,[field]:['unknown']}),/unsupported/);
-  }
-  for(const item of [null,{ingredient:'unknown',avoidance:'must'},{ingredient:'lactose',avoidance:'sometimes'}]){
-    assert.throws(()=>cleanProfile({...emptyProfile(),intolerances:[item]}),/intolerance/);
-  }
-  assert.throws(()=>cleanProfile({...emptyProfile(),intolerances:undefined}));
-  assert.throws(()=>cleanProfile({...emptyProfile(),language:'xx'}));
-});
-test('allergies take precedence and duplicate intolerance instructions retain the stricter choice',()=>{
-  const original={...emptyProfile(),allergens:['flaxseed'],intolerances:[
+test('version 2 migration preserves strict intolerances and resolves duplicates to the stronger instruction',()=>{
+  const original={version:2,allergens:['flaxseed'],diets:['vegan'],language:'sk',crossContact:true,intolerances:[
     {ingredient:'flaxseed',avoidance:'prefer'},
     {ingredient:'lactose',avoidance:'prefer'},
     {ingredient:'lactose',avoidance:'must'},
     {ingredient:'lactose',avoidance:'prefer'},
     {ingredient:'whitesugar',avoidance:'must'},
-    {ingredient:'trehalose',avoidance:'must'}]};
+    {ingredient:'trehalose',avoidance:'must'},
+    {ingredient:'onion',avoidance:'prefer'}]};
   const before=structuredClone(original),p=cleanProfile(original);
-  assert.deepEqual(p.allergens,['flaxseed']);
-  assert.deepEqual(p.intolerances,[{ingredient:'lactose',avoidance:'must'},{ingredient:'whitesugar',avoidance:'must'},{ingredient:'trehalose',avoidance:'must'}]);
+  assert.deepEqual(p,{...emptyProfile(),mustAvoid:['flaxseed','lactose','whitesugar','trehalose'],avoidIfPossible:['onion'],diets:['vegan'],language:'sk'});
   assert.deepEqual(original,before);
+});
+test('unsupported requirements fail instead of silently disappearing on import',()=>{
+  for(const field of ['mustAvoid','avoidIfPossible','diets'])assert.throws(()=>cleanProfile({...emptyProfile(),[field]:['unknown']}),/unsupported/);
+  for(const version of [1,2]){
+    const legacy={version,allergens:[],diets:[],intolerances:[],language:'en',crossContact:true};
+    assert.throws(()=>cleanProfile({...legacy,allergens:['unknown']}));
+    for(const item of [null,{ingredient:'unknown',avoidance:'must'},{ingredient:'lactose',avoidance:'sometimes'}])assert.throws(()=>cleanProfile({...legacy,intolerances:[item]}));
+  }
+  assert.throws(()=>cleanProfile({...emptyProfile(),mustAvoid:undefined}));
+  assert.throws(()=>cleanProfile({...emptyProfile(),avoidIfPossible:null}));
+  assert.throws(()=>cleanProfile({...emptyProfile(),language:'xx'}));
+});
+test('adding a requirement moves it to Must avoid without allowing a duplicate to weaken it',()=>{
+  const optional={...emptyProfile(),avoidIfPossible:['milk','onion']};
+  const required=addIngredient(optional,'mustAvoid','milk');
+  assert.deepEqual(required.mustAvoid,['milk']);assert.deepEqual(required.avoidIfPossible,['onion']);
+  assert.deepEqual(addIngredient(required,'avoidIfPossible','milk'),required);
+  assert.deepEqual(optional.avoidIfPossible,['milk','onion']);
+});
+test('one search covers common allergens, additional allergens and intolerance ingredients',()=>{
+  const labels=translations.en.ingredients;
+  assert.deepEqual(searchIngredients('milk',labels),['milk']);
+  assert.deepEqual(searchIngredients('linseed',labels),['flaxseed']);
+  assert.deepEqual(searchIngredients('cashew',labels),['cashew']);
+  assert.deepEqual(searchIngredients(' WHITE   SUGAR ',labels),['whitesugar']);
+  assert.deepEqual(searchIngredients('trehalose',labels),['trehalose']);
+  assert.deepEqual(searchIngredients('unknown ingredient',labels),[]);
+  assert.equal(searchIngredients('',labels).length,INGREDIENTS.length);
 });
 test('all supported cards have complete allergen, diet, instruction and tagline translations',()=>{
   for(const code of LANGUAGES){

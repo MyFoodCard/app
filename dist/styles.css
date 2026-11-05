@@ -88,29 +88,25 @@ legend{font-size:13px;font-weight:650;padding:0}
 .chip input:checked+span{background:var(--green-soft);border-color:var(--accent);color:var(--ink)}
 .chip input:checked+span:before{content:'✓';margin-right:5px;font-size:11px}
 .chip input:focus-visible+span{outline:3px solid var(--focus);outline-offset:3px}
-.allergy-fieldset{border-top:1px solid var(--line);padding-top:24px;margin-top:27px}
-.allergy-fieldset legend{float:left;width:100%;margin-bottom:3px}
-.allergy-fieldset .field-hint{clear:both;padding-top:3px}
-.allergy-chips .chip span{font-size:11px;padding:6px 9px}
-.allergy-chips .chip input:checked+span{color:var(--allergy);border-color:var(--allergy-line);background:var(--allergy-bg)}
-.chip[hidden]{display:none}
-.search-label{display:block;font-size:11px;font-weight:600;margin:10px 0 6px}
-#allergen-search,.intolerance-add select,.intolerance-row select{background:var(--input);color:var(--ink);border:1px solid var(--line);border-radius:7px;min-height:44px;padding:8px 10px;min-width:0;font-size:12px}
-#allergen-search{width:100%;margin-bottom:12px}
-.more-allergens{margin-top:12px}
-.more-allergens summary{cursor:pointer;font-size:12px;font-weight:600;color:var(--allergy);padding:8px 0}
-.intolerance-fieldset{padding-top:22px;border-top:1px solid var(--line)}
-.intolerance-fieldset legend{float:left;width:100%;margin-bottom:3px}
-.intolerance-fieldset>.field-hint{clear:both}
-.intolerance-add{display:flex;gap:8px}
-.intolerance-add select{flex:1;width:0}
-.intolerance-add button{padding:9px 14px}
-.intolerance-list{list-style:none;margin:12px 0 0;padding:0}
-.intolerance-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 10px;padding:12px 0;border-bottom:1px solid var(--line)}
-.intolerance-row>label{font-size:12px;font-weight:600;grid-column:1/-1}
-.intolerance-row select{width:100%}
-.intolerance-row button{min-height:44px;padding:0 3px}
-#intolerance-status:empty,#allergen-search-status:empty{display:none}
+.ingredient-fieldset{border-top:1px solid var(--line);padding-top:22px;margin-top:24px}
+.ingredient-fieldset legend{float:left;width:100%;margin-bottom:3px}
+.ingredient-fieldset>.field-hint{clear:both}
+.ingredient-search-label{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 6px;font-size:11px;font-weight:600}
+.browse-ingredients{min-height:32px;padding:4px 0}
+.ingredient-fieldset input[type=search]{width:100%;background:var(--input);color:var(--ink);border:1px solid var(--line);border-radius:7px;min-height:44px;padding:9px 11px;font-size:12px}
+.selected-ingredients{list-style:none;display:flex;flex-wrap:wrap;gap:6px;padding:0;margin:10px 0 0}
+.selected-ingredients:empty{display:none}
+.selected-ingredients button{display:flex;align-items:center;gap:10px;min-height:40px;max-width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:7px;background:var(--green-soft);color:var(--ink);text-align:start;font-size:12px}
+.selected-ingredients button span:first-child{overflow-wrap:anywhere}
+.selected-ingredients button span:last-child{font-size:17px}
+.required-picker .selected-ingredients button{background:var(--allergy-bg);border-color:var(--allergy-line);color:var(--allergy)}
+.selection-empty{font-size:11px;color:var(--muted);margin:10px 0}
+.ingredient-results{list-style:none;padding:4px;margin:6px 0 0;max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--input);overscroll-behavior:contain}
+.ingredient-results li+li{border-top:1px solid var(--line)}
+.ingredient-results button{border:0;border-radius:4px;background:transparent;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:start;width:100%;min-height:44px;padding:9px 8px;font-size:12px}
+.ingredient-results button:hover,.ingredient-results button:focus-visible{background:var(--green-soft)}
+.ingredient-results small{font-size:11px;color:var(--muted);flex-shrink:0}
+.search-status:empty{display:none}
 .check-row{display:flex;align-items:flex-start;gap:10px;margin-top:24px;cursor:pointer}
 .check-row input{accent-color:var(--accent);width:15px;height:15px;margin:2px 0 0;flex-shrink:0}
 .check-row strong{font-size:11px;font-weight:600}
@@ -151,14 +147,10 @@ legend{font-size:13px;font-weight:650;padding:0}
 .allergen-list{margin:8px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px}
 .allergen-list li{background:var(--card);border:1px solid var(--allergy-line);padding:4px 9px;color:var(--allergy);border-radius:5px;font-size:16px;font-weight:650}
 .card-allergies .cross-contact{font-size:13px;margin-top:9px;padding-top:9px;border-top:1px solid var(--allergy-line)}
-.card-intolerances{margin-top:14px}
-.card-intolerances>h3{font-size:11px;color:var(--ink);text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
-.intolerance-group{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-top:8px}
-.intolerance-group.must{border-inline-start:3px solid var(--accent);background:var(--green-soft)}
-.intolerance-group h4{font-size:14px;font-weight:700;margin:0 0 4px}
-.intolerance-group p{font-size:13px;color:var(--muted);line-height:1.5}
-.intolerance-group .allergen-list li{color:var(--ink);border-color:var(--line)}
-.intolerance-group .cross-contact{margin-top:9px;padding-top:9px;border-top:1px solid var(--line)}
+.card-preferences{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-top:14px}
+.card-preferences h3{font-size:12px;color:var(--ink);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px}
+.card-preferences p{font-size:13px;color:var(--muted);line-height:1.5}
+.card-preferences .allergen-list li{color:var(--ink);border-color:var(--line)}
 .card-diets{margin:14px 0 0}
 .card-diets>h3{font-size:11px;letter-spacing:.05em;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
 .diet-item{display:flex;gap:9px;margin-top:9px}
@@ -202,9 +194,8 @@ dialog::backdrop{background:#102920a8;backdrop-filter:blur(4px)}
 #present-card .card-allergies h3,#present-card .card-diets>h3{font-size:13px}
 #present-card .allergen-list li{font-size:21px}
 #present-card .diet-item h4{font-size:18px}
-#present-card .intolerance-group p{font-size:16px}
-#present-card .intolerance-group h4{font-size:18px}
-#present-card .card-intolerances>h3{font-size:13px}
+#present-card .card-preferences p{font-size:16px}
+#present-card .card-preferences h3{font-size:13px}
 #about-dialog{max-width:530px;padding:36px}
 #about-dialog h2{font:32px/1.2 Georgia,serif;margin-bottom:24px}
 #about-dialog li{margin:16px 0;padding-left:4px;font-size:13px}
