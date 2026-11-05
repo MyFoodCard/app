@@ -42,7 +42,7 @@ for(const basePath of ['/', '/app/']) test('offline shell and translations work 
   const context={URL,Request,Response,Promise,caches:{open:async()=>cache,keys:async()=>[oldCache,otherAppCache,'unrelated'],delete:async name=>assert.equal(name,oldCache)},fetch:async()=>{networkRequests++;throw new Error('Offline');},self:{location:new URL(scope),registration:{scope},clients:{claim:async()=>{}},skipWaiting:async()=>{},addEventListener:(name,callback)=>{listeners[name]=callback;}}};
   vm.runInNewContext(await readFile(new URL('../dist/sw.js',import.meta.url),'utf8'),context);
   let promise;listeners.install({waitUntil:p=>{promise=p;}});await promise;
-  assert.equal(entries.size,10);
+  assert.equal(entries.size,11);
   listeners.activate({waitUntil:p=>{promise=p;}});await promise;
   let response;listeners.fetch({request:{method:'GET',url:scope,mode:'navigate'},respondWith:p=>{response=p;}});
   assert.match(await (await response).text(),/MyFoodCard/);

@@ -1,12 +1,13 @@
 import {ALLERGENS,DIETS,LANGUAGES,emptyProfile,cleanProfile,toggleItem,countryAt,languageSuggestions} from './domain.js';
 import {translations} from './translations.js';
+import {createShareUrl,readSharedProfile} from './sharing.js';
 const $=id=>document.getElementById(id);
 const escape=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const KEY='myfoodcard.profile.v1';
-let profile=emptyProfile(), sample=false, offlineReady=false;
+let profile=emptyProfile(), sample=false, sharedProfile=null, offlineReady=false;
 try{const raw=localStorage.getItem(KEY);if(raw)profile=cleanProfile(JSON.parse(raw));}catch{$('form-message').textContent='Saved data could not be read. You can create a fresh profile below.';}
 const english=translations.en;
-function activeProfile(){return sample?{...profile,allergens:['flaxseed'],diets:['vegan'],crossContact:true}:profile;}
+function activeProfile(){return sharedProfile||(sample?{...profile,allergens:['flaxseed'],diets:['vegan'],crossContact:true}:profile);}
 function buildOptions(){
   for(const [type,keys,root] of [['diets',DIETS,'diet-options'],['allergens',ALLERGENS,'allergen-options']]){
     $(root).innerHTML=keys.map(key=>'<label class="chip"><input type="checkbox" data-group="'+type+'" aria-label="'+escape(type==='diets'?english.diets[key].label:english.allergens[key])+'" value="'+key+'"><span>'+escape(type==='diets'?english.diets[key].label:english.allergens[key])+'</span></label>').join('');
@@ -15,7 +16,7 @@ function buildOptions(){
 }
 function syncEditor(){
   $('cross-contact').checked=profile.crossContact;
-  $('card-language').value=profile.language;
+  $('card-language').value=activeProfile().language;
   document.querySelectorAll('[data-group]').forEach(input=>input.checked=profile[input.dataset.group].includes(input.value));
 }
 function save(){
@@ -36,18 +37,55 @@ function renderCard(){
   $('food-card').innerHTML=cardMarkup(p,sample);
   $('food-card').lang=p.language;$('food-card').dir=t.dir;
   $('sample-banner').hidden=!sample;
+  $('shared-banner').hidden=!sharedProfile;
+  document.body.classList.toggle('viewing-shared',Boolean(sharedProfile));
+  $('location-button').hidden=Boolean(sharedProfile);
+  $('share-status').textContent='Anyone with the link can read the shared preferences.';
   const count=p.allergens.length+p.diets.length;
   $('selected-count').textContent=count?count+' selected':'Your personal card';
-  $('present-button').disabled=!count;$('print-button').disabled=!count;
+  $('present-button').disabled=!count;$('print-button').disabled=!count;$('share-button').disabled=!count;
   $('sample-button')?.addEventListener('click',()=>{sample=true;renderCard();});
 }
 function edit(){sample=false;save();renderCard();}
 buildOptions();syncEditor();renderCard();
+function loadSharedLink(){
+  // The skip link can change the anchor while keeping the shared card open.
+  if(window.location.hash==='#main')return;
+  sample=false;
+  $('link-message').hidden=true;
+  try{sharedProfile=readSharedProfile(window.location.hash);}
+  catch(error){sharedProfile=null;$('link-message').textContent=error.message+' Your saved preferences have not changed.';$('link-message').hidden=false;}
+  syncEditor();renderCard();
+  if(sharedProfile||!$('link-message').hidden)viewCard(true);
+}
+loadSharedLink();
+window.addEventListener('hashchange',loadSharedLink);
+function leaveSharedCard(){
+  sharedProfile=null;sample=false;
+  const url=new URL(window.location.href);url.hash='';window.history.replaceState(null,'',url);
+  $('link-message').hidden=true;$('location-result').hidden=true;
+  syncEditor();renderCard();
+}
+$('exit-shared').addEventListener('click',()=>{leaveSharedCard();viewCard(false);});
+$('use-shared').addEventListener('click',()=>{
+  if(!sharedProfile)return;
+  profile=cleanProfile(sharedProfile);save();leaveSharedCard();viewCard(true);
+});
+$('share-button').addEventListener('click',async()=>{
+  const url=createShareUrl(activeProfile(),new URL('./',window.location.href).href);
+  try{
+    await navigator.clipboard.writeText(url);
+    $('share-status').textContent='Link copied. It contains this card’s current preferences and language.';
+  }catch{
+    $('share-url').value=url;$('share-dialog').showModal();$('share-url').focus();$('share-url').select();
+  }
+});
+$('close-share').addEventListener('click',()=>$('share-dialog').close());
 document.querySelectorAll('[data-group]').forEach(input=>input.addEventListener('change',()=>{
   const group=input.dataset.group;profile[group]=toggleItem(profile[group],input.value,input.checked);edit();
 }));
 $('cross-contact').addEventListener('change',event=>{profile.crossContact=event.target.checked;edit();});
-$('card-language').addEventListener('change',event=>{profile.language=event.target.value;save();renderCard();$('location-result').hidden=true;});
+$('card-language').addEventListener('change',event=>{if(sharedProfile)sharedProfile.language=event.target.value;else{profile.language=event.target.value;save();}renderCard();$('location-result').hidden=true;});
 $('exit-sample').addEventListener('click',()=>{sample=false;renderCard();});
 function viewCard(show){document.querySelector('.workspace').classList.toggle('show-card',show);$('edit-tab').setAttribute('aria-pressed',String(!show));$('card-tab').setAttribute('aria-pressed',String(show));}
 $('edit-tab').addEventListener('click',()=>viewCard(false));$('card-tab').addEventListener('click',()=>viewCard(true));

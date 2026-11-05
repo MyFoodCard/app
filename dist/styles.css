@@ -274,6 +274,25 @@ select option{color:var(--ink);background:var(--surface)}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}
 }
+
+/* Shared cards are a separate view; the recipient's editor remains untouched. */
+.viewing-shared .workspace{display:block;max-width:760px;margin:32px auto 0}
+.viewing-shared .editor,.viewing-shared .mobile-tabs,.viewing-shared .intro{display:none}
+.viewing-shared .preview{display:block}
+.shared-banner{display:flex;flex-direction:column;gap:12px;padding:14px;background:var(--green-soft);border:1px solid var(--line);border-radius:10px;margin-bottom:14px;font-size:12px}
+.shared-banner[hidden]{display:none}
+.shared-banner p{color:var(--muted);margin-top:4px}
+.shared-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.shared-actions .button{padding:8px 12px;min-height:40px}
+.card-actions{flex-wrap:wrap}
+.share-status{max-width:600px;margin:10px auto 0;text-align:center;font-size:11px;color:var(--muted)}
+#share-dialog{width:min(520px,calc(100vw - 24px))}
+#share-dialog h2{font-size:22px}
+#share-dialog p{font-size:13px;margin:16px 0}
+#share-dialog label{display:block;font-size:12px;font-weight:600;margin-bottom:6px}
+#share-url{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--input);color:var(--ink);font-size:14px}
+@media(max-width:500px){.card-actions .primary{flex-basis:100%}.viewing-shared .workspace{margin-top:20px}}
+
 @media print{:root[data-theme] {
   --ink:#173d35;
   --muted:#637063;
@@ -297,10 +316,11 @@ select option{color:var(--ink);background:var(--surface)}
 }
 @page{size:A5;margin:12mm}
 body{background:var(--surface)}
-.site-header,.intro,.editor,.mobile-tabs,.preview>.section-top,.language-bar,.location-result,.sample-banner,.card-actions,.preview-caption,.translation-note,footer,dialog,.skip-link{display:none!important}
+.site-header,.intro,.editor,.mobile-tabs,.preview>.section-top,.language-bar,.location-result,.sample-banner,.card-actions,.preview-caption,.translation-note,.shared-banner,.share-status,#link-message,footer,dialog,.skip-link{display:none!important}
 main{margin:0;max-width:none}
 .workspace{display:block}
 .preview{display:block!important;background:transparent;border:0;padding:0}
+.viewing-shared .workspace{margin:0;max-width:none}
 .card-stage{padding:0;max-width:none}
 .card-shadow{display:none}
 .food-card{box-shadow:none;border:0;padding:0;break-inside:avoid}
