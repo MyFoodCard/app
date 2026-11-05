@@ -2,7 +2,7 @@
 
 **Your food needs, in the local language.**
 
-A mobile-first restaurant card for dietary requirements and food allergies. The card and tagline translate together; setup controls are currently in English.
+A mobile-first restaurant card for dietary requirements and food allergies. The card translates into the selected language; setup controls are currently in English.
 
 ## First version
 

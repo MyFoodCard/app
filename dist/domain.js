@@ -1,12 +1,12 @@
 export const ALLERGENS = ['milk','eggs','peanuts','nuts','wheat','soy','fish','crustaceans','molluscs','sesame','celery','mustard','lupin','sulphites','flaxseed'];
 export const DIETS = ['vegan','vegetarian','halal','kosher','glutenfree','nopork','noalcohol'];
 export const LANGUAGES = ['en','sk','cs','de','fr','es','ar','th'];
-export const emptyProfile = () => ({version:1,name:'',allergens:[],diets:[],crossContact:true,language:'en'});
+export const emptyProfile = () => ({version:1,allergens:[],diets:[],crossContact:true,language:'en'});
 export function cleanProfile(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('This is not a MyFoodCard profile.');
   if (value.version !== undefined && value.version !== 1) throw new Error('This profile version is not supported.');
   const filter = (items, allowed) => [...new Set(Array.isArray(items) ? items.filter(item=>allowed.includes(item)) : [])];
-  return {version:1,name:typeof value.name==='string'?value.name.slice(0,60):'',allergens:filter(value.allergens,ALLERGENS),diets:filter(value.diets,DIETS),crossContact:typeof value.crossContact==='boolean'?value.crossContact:true,language:LANGUAGES.includes(value.language)?value.language:'en'};
+  return {version:1,allergens:filter(value.allergens,ALLERGENS),diets:filter(value.diets,DIETS),crossContact:typeof value.crossContact==='boolean'?value.crossContact:true,language:LANGUAGES.includes(value.language)?value.language:'en'};
 }
 export function toggleItem(items,item,checked){return checked?[...new Set([...items,item])]:items.filter(value=>value!==item);}
 export function inRing(lon,lat,ring){

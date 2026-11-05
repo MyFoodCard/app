@@ -6,7 +6,7 @@ const KEY='myfoodcard.profile.v1';
 let profile=emptyProfile(), sample=false, offlineReady=false;
 try{const raw=localStorage.getItem(KEY);if(raw)profile=cleanProfile(JSON.parse(raw));}catch{$('form-message').textContent='Saved data could not be read. You can create a fresh profile below.';}
 const english=translations.en;
-function activeProfile(){return sample?{...profile,name:'',allergens:['flaxseed'],diets:['vegan'],crossContact:true}:profile;}
+function activeProfile(){return sample?{...profile,allergens:['flaxseed'],diets:['vegan'],crossContact:true}:profile;}
 function buildOptions(){
   for(const [type,keys,root] of [['diets',DIETS,'diet-options'],['allergens',ALLERGENS,'allergen-options']]){
     $(root).innerHTML=keys.map(key=>'<label class="chip"><input type="checkbox" data-group="'+type+'" aria-label="'+escape(type==='diets'?english.diets[key].label:english.allergens[key])+'" value="'+key+'"><span>'+escape(type==='diets'?english.diets[key].label:english.allergens[key])+'</span></label>').join('');
@@ -14,7 +14,6 @@ function buildOptions(){
   $('card-language').innerHTML=LANGUAGES.map(code=>'<option value="'+code+'">'+escape(translations[code].native)+' · '+escape(translations[code].english)+'</option>').join('');
 }
 function syncEditor(){
-  $('profile-name').value=profile.name;
   $('cross-contact').checked=profile.crossContact;
   $('card-language').value=profile.language;
   document.querySelectorAll('[data-group]').forEach(input=>input.checked=profile[input.dataset.group].includes(input.value));
@@ -27,10 +26,10 @@ function cardMarkup(p, isSample=false){
   const t=translations[p.language];
   const hasData=p.allergens.length+p.diets.length>0;
   const top='<div class="card-brand"><span class="card-logo">myfoodcard<span class="brand-dot">.</span></span><span class="card-lang" dir="ltr">'+p.language.toUpperCase()+'</span></div>';
-  if(!hasData)return top+'<div class="empty-state" lang="en" dir="ltr"><img class="empty-icon" src="./icon.svg" alt=""><h3>A card that speaks for you.</h3><p>Choose your dietary requirements and allergies to create your restaurant card.</p><button id="sample-button">Try a sample card ↗</button><p class="tiny">Or start with your own preferences.</p></div><p class="card-tagline">'+escape(t.tagline)+'</p>';
+  if(!hasData)return top+'<div class="empty-state" lang="en" dir="ltr"><img class="empty-icon" src="./icon.svg" alt=""><h3>A card that speaks for you.</h3><p>Choose your dietary requirements and allergies to create your restaurant card.</p><button id="sample-button">Try a sample card ↗</button><p class="tiny">Or start with your own preferences.</p></div>';
   const allergy=p.allergens.length?'<section class="card-allergies"><h3><span class="alert-icon" aria-hidden="true">!</span>'+escape(t.allergyHeading)+'</h3><p>'+escape(t.allergyIntro)+'</p><ul class="allergen-list">'+p.allergens.map(key=>'<li>'+escape(t.allergens[key])+'</li>').join('')+'</ul>'+(p.crossContact?'<p class="cross-contact">'+escape(t.crossContact)+'</p>':'')+'</section>':'';
   const diets=p.diets.length?'<section class="card-diets"><h3>'+escape(t.dietHeading)+'</h3>'+p.diets.map(key=>'<div class="diet-item"><span class="diet-check" aria-hidden="true">✓</span><div><h4>'+escape(t.diets[key].label)+'</h4><p>'+escape(t.diets[key].instruction)+'</p></div></div>').join('')+'</section>':'';
-  return top+(isSample?'<span class="sample-marker" lang="en" dir="ltr">SAMPLE · Not your personal profile</span>':'')+(p.name?'<p class="person-name" dir="auto">'+escape(p.name)+'</p>':'')+'<p class="card-intro">'+escape(t.intro)+'</p>'+allergy+diets+'<p class="card-confirm">'+escape(t.confirm)+'</p><div class="card-footer"><p class="card-thanks">'+escape(t.thanks)+'</p><p class="card-tagline">'+escape(t.tagline)+'</p></div>';
+  return top+(isSample?'<span class="sample-marker" lang="en" dir="ltr">SAMPLE · Not your personal profile</span>':'')+'<p class="card-intro">'+escape(t.intro)+'</p>'+allergy+diets+'<p class="card-confirm">'+escape(t.confirm)+'</p><div class="card-footer"><p class="card-thanks">'+escape(t.thanks)+'</p></div>';
 }
 function renderCard(){
   const p=activeProfile(),t=translations[p.language];
@@ -44,7 +43,6 @@ function renderCard(){
 }
 function edit(){sample=false;save();renderCard();}
 buildOptions();syncEditor();renderCard();
-$('profile-name').addEventListener('input',event=>{profile.name=event.target.value.slice(0,60);edit();});
 document.querySelectorAll('[data-group]').forEach(input=>input.addEventListener('change',()=>{
   const group=input.dataset.group;profile[group]=toggleItem(profile[group],input.value,input.checked);edit();
 }));
@@ -63,7 +61,7 @@ $('print-button').addEventListener('click',()=>window.print());
 $('about-button').addEventListener('click',()=>$('about-dialog').showModal());
 $('close-about').addEventListener('click',()=>$('about-dialog').close());
 $('reset-button').addEventListener('click',()=>{
-  if(!confirm('Clear your saved name, dietary requirements and allergies on this device?'))return;
+  if(!confirm('Clear your saved dietary requirements and allergies on this device?'))return;
   const language=profile.language;profile={...emptyProfile(),language};sample=false;save();syncEditor();renderCard();$('form-message').textContent='Profile cleared on this device.';
 });
 $('export-button').addEventListener('click',()=>{

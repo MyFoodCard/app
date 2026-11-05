@@ -78,10 +78,6 @@ h1 em{font-family:Georgia,serif;font-weight:400;color:var(--accent)}
 .save-status{font-size:10px;margin-left:auto;color:var(--muted)}
 .muted{color:var(--muted)}
 .editor-intro{font-size:12px;margin:12px 0 24px}
-.field-label{display:block;font-size:12px;font-weight:600;margin-bottom:8px}
-.field-label span{font-size:11px;color:var(--muted);font-weight:400;margin-left:5px}
-input[type=text],#profile-name{width:100%;padding:12px 13px;background:var(--input);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:12px}
-input::placeholder{color:var(--muted)}
 fieldset{border:0;padding:0;margin:25px 0 0;min-width:0}
 legend{font-size:13px;font-weight:650;padding:0}
 .field-hint{font-size:11px;color:var(--muted);margin:5px 0 12px}
@@ -130,7 +126,6 @@ legend{font-size:13px;font-weight:650;padding:0}
 .card-logo{font-size:14px;font-weight:720;letter-spacing:-.5px;direction:ltr;display:inline-block}
 .card-lang{border:1px solid var(--line);color:var(--accent);border-radius:4px;font-size:10px;padding:3px 6px;font-weight:650;letter-spacing:.08em}
 .card-intro{font-size:13px;line-height:1.5;color:var(--muted);max-width:none}
-.person-name{font-size:12px;font-weight:600;margin-bottom:6px;color:var(--accent)}
 .card-allergies{background:var(--allergy-bg);border:1px solid var(--allergy-line);border-radius:8px;padding:12px 14px;margin-top:14px}
 .card-allergies h3{font-size:12px;letter-spacing:.03em;color:var(--allergy);text-transform:uppercase;display:flex;gap:7px;align-items:center}
 .alert-icon{font:600 10px Arial;border:1px solid var(--allergy);border-radius:50%;width:14px;height:14px;display:inline-grid;place-items:center;flex-shrink:0}
@@ -146,7 +141,6 @@ legend{font-size:13px;font-weight:650;padding:0}
 .diet-item p{font-size:13px;line-height:1.5;color:var(--muted)}
 .card-confirm{font-size:13px;line-height:1.5;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px;margin-top:14px}
 .card-thanks{margin-top:0;font-family:Georgia,serif;font-size:15px;font-style:italic;color:var(--accent)}
-.card-tagline{margin-top:0;font-size:10px;letter-spacing:.02em;color:var(--muted)}
 .card-actions{display:flex;gap:10px;justify-content:center;margin-top:15px;max-width:600px;margin-inline:auto}
 .button{padding:12px 18px;min-height:44px;border-radius:8px;border:1px solid transparent;font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:9px}
 .primary{background:var(--primary);color:var(--on-primary);flex:1}
@@ -182,7 +176,6 @@ dialog::backdrop{background:#102920a8;backdrop-filter:blur(4px)}
 #present-card .card-allergies h3,#present-card .card-diets>h3{font-size:13px}
 #present-card .allergen-list li{font-size:21px}
 #present-card .diet-item h4{font-size:18px}
-#present-card .card-tagline{font-size:11px}
 #about-dialog{max-width:530px;padding:36px}
 #about-dialog h2{font:32px/1.2 Georgia,serif;margin-bottom:24px}
 #about-dialog li{margin:16px 0;padding-left:4px;font-size:13px}
@@ -268,7 +261,6 @@ body:has(#present-dialog[open]){overflow:hidden}
 .theme-control select{min-height:40px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer}
 select option{color:var(--ink);background:var(--surface)}
 .card-footer{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;margin-top:12px}
-.empty-state+.card-tagline{text-align:center}
 @media(max-width:500px){
 .site-header{height:auto;min-height:84px;padding:14px 20px;display:grid;grid-template-columns:1fr auto;gap:5px 12px}
 .header-right{display:contents}
@@ -313,5 +305,4 @@ main{margin:0;max-width:none}
 .card-shadow{display:none}
 .food-card{box-shadow:none;border:0;padding:0;break-inside:avoid}
 .card-allergies{-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:12px 14px;margin-top:14px}
-.card-tagline{font-size:10px;margin-top:0}
 }

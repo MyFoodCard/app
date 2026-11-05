@@ -1,5 +1,5 @@
 const CACHE_PREFIX='myfoodcard-'+encodeURIComponent(new URL(self.registration.scope).pathname)+'-';
-const CACHE=CACHE_PREFIX+'v3';
+const CACHE=CACHE_PREFIX+'v4';
 const FILES=['./','./index.html','./styles.css','./app.js','./theme.js','./domain.js','./translations.js','./countries.json','./icon.svg','./manifest.webmanifest'];
 const urls=FILES.map(file=>new URL(file,self.registration.scope).href);
 self.addEventListener('install',event=>event.waitUntil((async()=>{

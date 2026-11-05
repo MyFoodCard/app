@@ -6,11 +6,11 @@ import {ALLERGENS,DIETS,LANGUAGES,emptyProfile,cleanProfile,countryAt,languageSu
 import {translations} from '../dist/translations.js';
 const {countries}=JSON.parse(await readFile(new URL('../dist/countries.json',import.meta.url),'utf8'));
 test('a new profile does not invent a dietary or medical requirement',()=>{
-  const p=emptyProfile();assert.deepEqual(p.allergens,[]);assert.deepEqual(p.diets,[]);assert.equal(p.name,'');
+  const p=emptyProfile();assert.deepEqual(p.allergens,[]);assert.deepEqual(p.diets,[]);assert.equal(Object.hasOwn(p,'name'),false);
 });
-test('import ignores unknown values, deduplicates, limits names, and rejects future versions',()=>{
+test('import ignores unknown values, deduplicates, drops legacy names, and rejects future versions',()=>{
   const p=cleanProfile({version:1,name:'x'.repeat(100),allergens:['flaxseed','flaxseed','__proto__'],diets:['vegan','no-such-diet'],language:'xx',crossContact:false});
-  assert.deepEqual(p.allergens,['flaxseed']);assert.deepEqual(p.diets,['vegan']);assert.equal(p.name.length,60);assert.equal(p.language,'en');assert.equal(p.crossContact,false);
+  assert.deepEqual(p.allergens,['flaxseed']);assert.deepEqual(p.diets,['vegan']);assert.equal(Object.hasOwn(p,'name'),false);assert.equal(p.language,'en');assert.equal(p.crossContact,false);
   assert.throws(()=>cleanProfile({version:2}));assert.throws(()=>cleanProfile(null));assert.throws(()=>cleanProfile([]));
 });
 test('all supported cards have complete allergen, diet, instruction and tagline translations',()=>{
