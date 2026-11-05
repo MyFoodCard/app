@@ -2,21 +2,47 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
-import {ALLERGENS,DIETS,LANGUAGES,emptyProfile,cleanProfile,countryAt,languageSuggestions,inRing} from '../dist/domain.js';
+import {ALLERGENS,INGREDIENTS,DIETS,LANGUAGES,emptyProfile,cleanProfile,countryAt,languageSuggestions,inRing} from '../dist/domain.js';
 import {translations} from '../dist/translations.js';
 const {countries}=JSON.parse(await readFile(new URL('../dist/countries.json',import.meta.url),'utf8'));
 test('a new profile does not invent a dietary or medical requirement',()=>{
-  const p=emptyProfile();assert.deepEqual(p.allergens,[]);assert.deepEqual(p.diets,[]);assert.equal(Object.hasOwn(p,'name'),false);
+  const p=emptyProfile();assert.deepEqual(p.allergens,[]);assert.deepEqual(p.diets,[]);assert.deepEqual(p.intolerances,[]);assert.equal(Object.hasOwn(p,'name'),false);
 });
-test('import ignores unknown values, deduplicates, drops legacy names, and rejects future versions',()=>{
-  const p=cleanProfile({version:1,name:'x'.repeat(100),allergens:['flaxseed','flaxseed','__proto__'],diets:['vegan','no-such-diet'],language:'xx',crossContact:false});
+test('legacy imports migrate without losing known requirements or retaining names',()=>{
+  const p=cleanProfile({version:1,name:'x'.repeat(100),allergens:['flaxseed','flaxseed'],diets:['vegan'],language:'xx',crossContact:false});
   assert.deepEqual(p.allergens,['flaxseed']);assert.deepEqual(p.diets,['vegan']);assert.equal(Object.hasOwn(p,'name'),false);assert.equal(p.language,'en');assert.equal(p.crossContact,false);
-  assert.throws(()=>cleanProfile({version:2}));assert.throws(()=>cleanProfile(null));assert.throws(()=>cleanProfile([]));
+  assert.equal(p.version,2);assert.deepEqual(p.intolerances,[]);
+  assert.throws(()=>cleanProfile({version:3}));assert.throws(()=>cleanProfile(null));assert.throws(()=>cleanProfile([]));
+});
+test('unsupported requirements fail instead of silently disappearing on import',()=>{
+  for(const version of [1,2])for(const field of ['allergens','diets']){
+    assert.throws(()=>cleanProfile({...emptyProfile(),version,[field]:['unknown']}),/unsupported/);
+  }
+  for(const item of [null,{ingredient:'unknown',avoidance:'must'},{ingredient:'lactose',avoidance:'sometimes'}]){
+    assert.throws(()=>cleanProfile({...emptyProfile(),intolerances:[item]}),/intolerance/);
+  }
+  assert.throws(()=>cleanProfile({...emptyProfile(),intolerances:undefined}));
+  assert.throws(()=>cleanProfile({...emptyProfile(),language:'xx'}));
+});
+test('allergies take precedence and duplicate intolerance instructions retain the stricter choice',()=>{
+  const original={...emptyProfile(),allergens:['flaxseed'],intolerances:[
+    {ingredient:'flaxseed',avoidance:'prefer'},
+    {ingredient:'lactose',avoidance:'prefer'},
+    {ingredient:'lactose',avoidance:'must'},
+    {ingredient:'lactose',avoidance:'prefer'},
+    {ingredient:'whitesugar',avoidance:'must'},
+    {ingredient:'trehalose',avoidance:'must'}]};
+  const before=structuredClone(original),p=cleanProfile(original);
+  assert.deepEqual(p.allergens,['flaxseed']);
+  assert.deepEqual(p.intolerances,[{ingredient:'lactose',avoidance:'must'},{ingredient:'whitesugar',avoidance:'must'},{ingredient:'trehalose',avoidance:'must'}]);
+  assert.deepEqual(original,before);
 });
 test('all supported cards have complete allergen, diet, instruction and tagline translations',()=>{
   for(const code of LANGUAGES){
     const t=translations[code];assert.ok(t.tagline);assert.ok(t.confirm);assert.ok(t.crossContact);
     for(const key of ALLERGENS)assert.ok(t.allergens[key]?.length>1,code+' '+key);
+    for(const key of INGREDIENTS)assert.ok(t.ingredients[key]?.length>1,code+' '+key);
+    for(const key of ['heading','mustAvoid','preferAvoid','mustIntro','preferIntro','crossContact'])assert.ok(t.intolerances[key],code+' '+key);
     for(const key of DIETS){assert.ok(t.diets[key]?.label);assert.ok(t.diets[key]?.instruction);}
   }
   assert.equal(translations.ar.dir,'rtl');assert.equal(translations.th.dir,'ltr');
@@ -42,7 +68,7 @@ for(const basePath of ['/', '/app/']) test('offline shell and translations work 
   const context={URL,Request,Response,Promise,caches:{open:async()=>cache,keys:async()=>[oldCache,otherAppCache,'unrelated'],delete:async name=>assert.equal(name,oldCache)},fetch:async()=>{networkRequests++;throw new Error('Offline');},self:{location:new URL(scope),registration:{scope},clients:{claim:async()=>{}},skipWaiting:async()=>{},addEventListener:(name,callback)=>{listeners[name]=callback;}}};
   vm.runInNewContext(await readFile(new URL('../dist/sw.js',import.meta.url),'utf8'),context);
   let promise;listeners.install({waitUntil:p=>{promise=p;}});await promise;
-  assert.equal(entries.size,11);
+  assert.equal(entries.size,14);
   listeners.activate({waitUntil:p=>{promise=p;}});await promise;
   let response;listeners.fetch({request:{method:'GET',url:scope,mode:'navigate'},respondWith:p=>{response=p;}});
   assert.match(await (await response).text(),/MyFoodCard/);
@@ -51,6 +77,10 @@ for(const basePath of ['/', '/app/']) test('offline shell and translations work 
   assert.match(await (await response).text(),/بذور الكتان/);
   listeners.fetch({request:new Request(scope+'theme.js'),respondWith:p=>{response=p;}});
   assert.match(await (await response).text(),/myfoodcard.theme.v1/);
+  listeners.fetch({request:new Request(scope+'ingredient-translations.js'),respondWith:p=>{response=p;}});
+  assert.match(await (await response).text(),/trehalose/);
+  listeners.fetch({request:new Request(scope+'card.js'),respondWith:p=>{response=p;}});
+  assert.match(await (await response).text(),/mustAvoid/);
   let ready;listeners.message({data:{type:'CHECK_CACHE'},ports:[{postMessage:value=>{ready=value.ready;}}],waitUntil:p=>{promise=p;}});await promise;assert.equal(ready,true);
   entries.delete(scope+'countries.json');listeners.message({data:{type:'CHECK_CACHE'},ports:[{postMessage:value=>{ready=value.ready;}}],waitUntil:p=>{promise=p;}});await promise;assert.equal(ready,false);
 });

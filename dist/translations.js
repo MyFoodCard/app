@@ -1,7 +1,8 @@
-import { ALLERGENS, DIETS } from './domain.js';
+import { LEGACY_ALLERGENS, ALLERGENS, DIETS } from './domain.js';
+import { ingredientTranslations } from './ingredient-translations.js';
 const make = (native, english, dir, tagline, heading, intro, allergyHeading, allergyIntro, crossContact, dietHeading, confirm, thanks, allergens, diets, instructions) => ({
   native,english,dir,tagline,heading,intro,allergyHeading,allergyIntro,crossContact,dietHeading,confirm,thanks,
-  allergens:Object.fromEntries(ALLERGENS.map((key,i)=>[key,allergens[i]])),
+  allergens:Object.fromEntries(LEGACY_ALLERGENS.map((key,i)=>[key,allergens[i]])),
   diets:Object.fromEntries(DIETS.map((key,i)=>[key,{label:diets[i],instruction:instructions[i]}]))
 });
 export const translations = {
@@ -142,4 +143,11 @@ th:make('ไทย','Thai','ltr',
 'ไม่มีเนื้อหมู มันหมู หรือส่วนผสมที่มาจากหมู',
 'ไม่มีแอลกอฮอล์ รวมถึงในซอสและการปรุงอาหาร'])
 };
+
+for (const [code,t] of Object.entries(translations)) {
+  const extra=ingredientTranslations[code];
+  t.ingredients={...t.allergens,...extra.foods};
+  t.allergens=Object.fromEntries(ALLERGENS.map(key=>[key,t.ingredients[key]]));
+  t.intolerances=extra.intolerance;
+}
 

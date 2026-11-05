@@ -1,15 +1,17 @@
-import {ALLERGENS,DIETS,LANGUAGES,emptyProfile,cleanProfile,toggleItem,countryAt,languageSuggestions} from './domain.js';
+import {COMMON_ALLERGENS,MORE_ALLERGENS,INGREDIENTS,DIETS,LANGUAGES,emptyProfile,cleanProfile,requirementCount,toggleItem,countryAt,languageSuggestions} from './domain.js';
 import {translations} from './translations.js';
 import {createShareUrl,readSharedProfile} from './sharing.js';
+import {cardMarkup} from './card.js';
+import {PROFILE_KEY,loadProfile} from './profile-storage.js';
 const $=id=>document.getElementById(id);
 const escape=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-const KEY='myfoodcard.profile.v1';
 let profile=emptyProfile(), sample=false, sharedProfile=null, offlineReady=false;
-try{const raw=localStorage.getItem(KEY);if(raw)profile=cleanProfile(JSON.parse(raw));}catch{$('form-message').textContent='Saved data could not be read. You can create a fresh profile below.';}
+try{const loaded=loadProfile(localStorage);profile=loaded.profile;if(loaded.saveFailed){$('save-status').textContent='Not saved';$('form-message').textContent='Your previous profile was loaded, but this browser cannot save the updated profile. Export it to keep a copy.';}}
+catch{$('form-message').textContent='Saved data could not be read. It has not been changed. Import a supported backup or create a new profile below.';}
 const english=translations.en;
-function activeProfile(){return sharedProfile||(sample?{...profile,allergens:['flaxseed'],diets:['vegan'],crossContact:true}:profile);}
+function activeProfile(){return sharedProfile||(sample?{...profile,allergens:['flaxseed'],diets:['vegan'],intolerances:[],crossContact:true}:profile);}
 function buildOptions(){
-  for(const [type,keys,root] of [['diets',DIETS,'diet-options'],['allergens',ALLERGENS,'allergen-options']]){
+  for(const [type,keys,root] of [['diets',DIETS,'diet-options'],['allergens',COMMON_ALLERGENS,'allergen-options'],['allergens',MORE_ALLERGENS,'more-allergen-options']]){
     $(root).innerHTML=keys.map(key=>'<label class="chip"><input type="checkbox" data-group="'+type+'" aria-label="'+escape(type==='diets'?english.diets[key].label:english.allergens[key])+'" value="'+key+'"><span>'+escape(type==='diets'?english.diets[key].label:english.allergens[key])+'</span></label>').join('');
   }
   $('card-language').innerHTML=LANGUAGES.map(code=>'<option value="'+code+'">'+escape(translations[code].native)+' · '+escape(translations[code].english)+'</option>').join('');
@@ -18,19 +20,33 @@ function syncEditor(){
   $('cross-contact').checked=profile.crossContact;
   $('card-language').value=activeProfile().language;
   document.querySelectorAll('[data-group]').forEach(input=>input.checked=profile[input.dataset.group].includes(input.value));
+  if(profile.allergens.some(key=>MORE_ALLERGENS.includes(key)))$('more-allergens').open=true;
+  filterAllergens();renderIntoleranceEditor();
 }
 function save(){
-  try{localStorage.setItem(KEY,JSON.stringify(profile));$('save-status').textContent='Saved on device';}
-  catch{$('save-status').textContent='Not saved';$('form-message').textContent='This browser cannot save your profile. Export it to keep a copy.';}
+  try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));$('save-status').textContent='Saved on device';return true;}
+  catch{$('save-status').textContent='Not saved';$('form-message').textContent='This browser cannot save your profile. Export it to keep a copy.';return false;}
 }
-function cardMarkup(p, isSample=false){
-  const t=translations[p.language];
-  const hasData=p.allergens.length+p.diets.length>0;
-  const top='<div class="card-brand"><span class="card-logo">myfoodcard<span class="brand-dot">.</span></span><span class="card-lang" dir="ltr">'+p.language.toUpperCase()+'</span></div>';
-  if(!hasData)return top+'<div class="empty-state" lang="en" dir="ltr"><img class="empty-icon" src="./icon.svg" alt=""><h3>A card that speaks for you.</h3><p>Choose your dietary requirements and allergies to create your restaurant card.</p><button id="sample-button">Try a sample card ↗</button><p class="tiny">Or start with your own preferences.</p></div>';
-  const allergy=p.allergens.length?'<section class="card-allergies"><h3><span class="alert-icon" aria-hidden="true">!</span>'+escape(t.allergyHeading)+'</h3><p>'+escape(t.allergyIntro)+'</p><ul class="allergen-list">'+p.allergens.map(key=>'<li>'+escape(t.allergens[key])+'</li>').join('')+'</ul>'+(p.crossContact?'<p class="cross-contact">'+escape(t.crossContact)+'</p>':'')+'</section>':'';
-  const diets=p.diets.length?'<section class="card-diets"><h3>'+escape(t.dietHeading)+'</h3>'+p.diets.map(key=>'<div class="diet-item"><span class="diet-check" aria-hidden="true">✓</span><div><h4>'+escape(t.diets[key].label)+'</h4><p>'+escape(t.diets[key].instruction)+'</p></div></div>').join('')+'</section>':'';
-  return top+(isSample?'<span class="sample-marker" lang="en" dir="ltr">SAMPLE · Not your personal profile</span>':'')+'<p class="card-intro">'+escape(t.intro)+'</p>'+allergy+diets+'<p class="card-confirm">'+escape(t.confirm)+'</p><div class="card-footer"><p class="card-thanks">'+escape(t.thanks)+'</p></div>';
+function filterAllergens(){
+  const query=$('allergen-search').value.trim().toLowerCase();let matches=0,moreMatches=0;
+  document.querySelectorAll('[data-group="allergens"]').forEach(input=>{
+    const match=english.allergens[input.value].toLowerCase().includes(query);
+    input.closest('.chip').hidden=!match;
+    if(match){matches++;if(MORE_ALLERGENS.includes(input.value))moreMatches++;}
+  });
+  if(query&&moreMatches)$('more-allergens').open=true;
+  $('more-allergens').hidden=Boolean(query&&!moreMatches);
+  const selected=profile.allergens.filter(key=>MORE_ALLERGENS.includes(key)).length;
+  $('more-allergens-label').textContent='More allergens'+(selected?' · '+selected+' selected':'');
+  $('allergen-search-status').textContent=query?(matches?matches+' matching choices':'No matching allergen. This list is not exhaustive.'):'';
+}
+function renderIntoleranceEditor(){
+  const selected=$('intolerance-ingredient').value;
+  const keys=[...INGREDIENTS].sort((a,b)=>english.ingredients[a].localeCompare(english.ingredients[b],'en'));
+  $('intolerance-ingredient').innerHTML='<option value="">Choose an ingredient…</option>'+keys.map(key=>'<option value="'+key+'"'+(profile.allergens.includes(key)||profile.intolerances.some(item=>item.ingredient===key)?' disabled':'')+'>'+escape(english.ingredients[key])+'</option>').join('');
+  if(selected&&!profile.allergens.includes(selected)&&!profile.intolerances.some(item=>item.ingredient===selected))$('intolerance-ingredient').value=selected;
+  $('add-intolerance').disabled=!$('intolerance-ingredient').value;
+  $('intolerance-list').innerHTML=profile.intolerances.map(item=>'<li class="intolerance-row"><label for="avoid-'+item.ingredient+'">'+escape(english.ingredients[item.ingredient])+'</label><select id="avoid-'+item.ingredient+'" data-avoidance="'+item.ingredient+'" aria-label="Avoidance for '+escape(english.ingredients[item.ingredient])+'"><option value="must"'+(item.avoidance==='must'?' selected':'')+'>Must avoid</option><option value="prefer"'+(item.avoidance==='prefer'?' selected':'')+'>Avoid if possible</option></select><button class="text-button" data-remove-intolerance="'+item.ingredient+'" aria-label="Remove '+escape(english.ingredients[item.ingredient])+' intolerance">Remove</button></li>').join('');
 }
 function renderCard(){
   const p=activeProfile(),t=translations[p.language];
@@ -41,7 +57,7 @@ function renderCard(){
   document.body.classList.toggle('viewing-shared',Boolean(sharedProfile));
   $('location-button').hidden=Boolean(sharedProfile);
   $('share-status').textContent='Anyone with the link can read the shared preferences.';
-  const count=p.allergens.length+p.diets.length;
+  const count=requirementCount(p);
   $('selected-count').textContent=count?count+' selected':'Your personal card';
   $('present-button').disabled=!count;$('print-button').disabled=!count;$('share-button').disabled=!count;
   $('sample-button')?.addEventListener('click',()=>{sample=true;renderCard();});
@@ -82,8 +98,39 @@ $('share-button').addEventListener('click',async()=>{
 });
 $('close-share').addEventListener('click',()=>$('share-dialog').close());
 document.querySelectorAll('[data-group]').forEach(input=>input.addEventListener('change',()=>{
-  const group=input.dataset.group;profile[group]=toggleItem(profile[group],input.value,input.checked);edit();
+  const group=input.dataset.group;profile[group]=toggleItem(profile[group],input.value,input.checked);
+  if(group==='allergens'){
+    const overlap=input.checked&&profile.intolerances.some(item=>item.ingredient===input.value);
+    if(overlap){profile.intolerances=profile.intolerances.filter(item=>item.ingredient!==input.value);$('intolerance-status').textContent=english.ingredients[input.value]+' is now shown as an allergy. Its intolerance entry was removed.';}
+    renderIntoleranceEditor();filterAllergens();
+  }
+  edit();
 }));
+$('allergen-search').addEventListener('input',filterAllergens);
+$('intolerance-ingredient').addEventListener('change',()=>$('add-intolerance').disabled=!$('intolerance-ingredient').value);
+$('add-intolerance').addEventListener('click',()=>{
+  const ingredient=$('intolerance-ingredient').value;
+  if(!INGREDIENTS.includes(ingredient)||profile.allergens.includes(ingredient)||profile.intolerances.some(item=>item.ingredient===ingredient))return;
+  profile.intolerances.push({ingredient,avoidance:'must'});
+  $('intolerance-status').textContent=english.ingredients[ingredient]+' added as “Must avoid”. You can change the instruction below.';
+  renderIntoleranceEditor();edit();$('avoid-'+ingredient).focus();
+});
+$('intolerance-list').addEventListener('change',event=>{
+  const ingredient=event.target.dataset.avoidance;
+  const item=profile.intolerances.find(item=>item.ingredient===ingredient);
+  if(item&&['must','prefer'].includes(event.target.value)){
+    item.avoidance=event.target.value;
+    $('intolerance-status').textContent=english.ingredients[ingredient]+' set to “'+(item.avoidance==='must'?'Must avoid':'Avoid if possible')+'”.';
+    edit();
+  }
+});
+$('intolerance-list').addEventListener('click',event=>{
+  const button=event.target.closest('[data-remove-intolerance]');if(!button)return;
+  const ingredient=button.dataset.removeIntolerance;
+  profile.intolerances=profile.intolerances.filter(item=>item.ingredient!==ingredient);
+  $('intolerance-status').textContent=english.ingredients[ingredient]+' removed.';
+  renderIntoleranceEditor();edit();$('intolerance-ingredient').focus();
+});
 $('cross-contact').addEventListener('change',event=>{profile.crossContact=event.target.checked;edit();});
 $('card-language').addEventListener('change',event=>{if(sharedProfile)sharedProfile.language=event.target.value;else{profile.language=event.target.value;save();}renderCard();$('location-result').hidden=true;});
 $('exit-sample').addEventListener('click',()=>{sample=false;renderCard();});
@@ -99,8 +146,13 @@ $('print-button').addEventListener('click',()=>window.print());
 $('about-button').addEventListener('click',()=>$('about-dialog').showModal());
 $('close-about').addEventListener('click',()=>$('about-dialog').close());
 $('reset-button').addEventListener('click',()=>{
-  if(!confirm('Clear your saved dietary requirements and allergies on this device?'))return;
-  const language=profile.language;profile={...emptyProfile(),language};sample=false;save();syncEditor();renderCard();$('form-message').textContent='Profile cleared on this device.';
+  if(!confirm('Clear your saved dietary requirements, allergies and intolerances on this device?'))return;
+  const language=profile.language;profile={...emptyProfile(),language};sample=false;
+  const saved=save();syncEditor();renderCard();$('intolerance-status').textContent='';
+  if(saved){
+    try{localStorage.removeItem('myfoodcard.profile.v1');$('form-message').textContent='Profile cleared on this device.';}
+    catch{$('form-message').textContent='The current profile was cleared, but an older backup could not be removed. Clear this site’s browser data to remove it.';}
+  }
 });
 $('export-button').addEventListener('click',()=>{
   const blob=new Blob([JSON.stringify(profile,null,2)],{type:'application/json'});
@@ -113,10 +165,11 @@ $('import-file').addEventListener('change',async event=>{
   try{
     if(file.size>20000)throw new Error('Choose a MyFoodCard profile smaller than 20 KB.');
     const parsed=JSON.parse(await file.text());
-    if(parsed.version!==1||!Array.isArray(parsed.allergens)||!Array.isArray(parsed.diets))throw new Error('This is not a supported MyFoodCard profile.');
+    if(!parsed||![1,2].includes(parsed.version)||!Array.isArray(parsed.allergens)||!Array.isArray(parsed.diets))throw new Error('This is not a supported MyFoodCard profile.');
     const imported=cleanProfile(parsed);
     if(!confirm('Replace your saved profile with the profile from this file?'))return;
-    profile=imported;sample=false;save();syncEditor();renderCard();$('form-message').textContent='Profile imported. Please review every selection.';
+    profile=imported;sample=false;const saved=save();syncEditor();renderCard();$('intolerance-status').textContent='';
+    if(saved)$('form-message').textContent='Profile imported. Please review every selection.';
   }catch(error){$('form-message').textContent=error instanceof SyntaxError?'This file is not valid JSON.':error.message;}
   finally{event.target.value='';}
 });

@@ -7,7 +7,9 @@ A mobile-first restaurant card for dietary requirements and food allergies. The 
 ## First version
 
 - Personal profile saved locally in the browser; no application account or server database.
-- Separate allergy and dietary sections. Fifteen allergen categories, including flaxseed/linseed; vegan, vegetarian, halal, kosher, gluten-free, no pork and no alcohol requirements.
+- Separate allergy, intolerance/sensitivity and dietary sections. Search 37 allergen choices, including flaxseed/linseed, additional seeds and legumes, and individual tree nuts. Common and additional picker groups have equal prominence on the card.
+- Intolerances support 44 ingredient choices, including white sugar, trehalose and lactose. Each has an explicit **Must avoid** or **Avoid if possible** instruction; new entries default to Must avoid. Cross-contact instructions apply to allergies and Must avoid entries only. An allergy takes precedence over an intolerance for the same ingredient.
+- Vegan, vegetarian, halal, kosher, gluten-free, no pork and no alcohol requirements remain independent of allergies and intolerances. Selecting one ingredient never automatically selects related ingredients.
 - English, Slovak, Czech, German, French, Spanish, Arabic (RTL) and Thai card packs bundled offline.
 - Compact restaurant card and readable presentation view; print/PDF through the browser and JSON profile export/import.
 - Copy a shareable link containing the selected requirements and card language. Recipients view the shared card without changing their saved profile, and can explicitly choose to adopt it.
@@ -42,7 +44,7 @@ The project URL is `https://myfoodcard.github.io/app/` once deployment succeeds.
 
 ## Privacy and offline behavior
 
-Profile data is in `localStorage` under `myfoodcard.profile.v1`. Appearance is stored separately under `myfoodcard.theme.v1` and is not included in profile exports. The app does not upload profiles or coordinates to a backend. A shared link deliberately includes an encoded snapshot of food preferences and language in the URL fragment (the part after `#`), which browsers do not include in HTTP requests to the static host. Anyone who receives the complete link can decode its contents; it is not encrypted, cannot be revoked, and does not update when the sender changes their profile. The link may also be retained in messaging and browser history. The hosting provider still receives normal page/asset requests. Browser geolocation itself may use the browser/OS location provider. No location is persisted by this app.
+Profile data is in `localStorage` under `myfoodcard.profile.v2`. Existing version 1 profiles migrate automatically; their old key is retained as a backup so older open tabs cannot overwrite new intolerance data. Clear removes that backup too. JSON import and shared links accept versions 1 and 2; new exports use version 2. Unknown food requirements and avoidance instructions are rejected rather than silently dropped. Appearance is stored separately under `myfoodcard.theme.v1` and is not included in profile exports. The app does not upload profiles or coordinates to a backend. A shared link deliberately includes an encoded snapshot of food preferences and language in the URL fragment (the part after `#`), which browsers do not include in HTTP requests to the static host. Anyone who receives the complete link can decode its contents; it is not encrypted, cannot be revoked, and does not update when the sender changes their profile. The link may also be retained in messaging and browser history. The hosting provider still receives normal page/asset requests. Browser geolocation itself may use the browser/OS location provider. No location is persisted by this app.
 
 The first visit needs connectivity. Browser storage can be cleared or evicted; export a backup. Private hosting may require a sign-in to open the initial online page. The app shell is cached locally and should not be treated as an authentication-protected vault.
 
@@ -54,12 +56,24 @@ Location lookup uses generalized Natural Earth 1:110m polygons. Coastal location
 
 - `dist/app.js`: UI, storage, import/export, location workflow.
 - `dist/domain.js`: profile validation and geography logic.
+- `dist/profile-storage.js`: local profile migration and version isolation.
+- `dist/card.js`: shared rendering for the preview, presentation and print card.
 - `dist/sharing.js`: versioned share-link encoding and strict decoding.
 - `dist/theme.js`: first-paint theme, system preference changes and saved appearance.
-- `dist/translations.js`: card language catalog.
+- `dist/translations.js`, `dist/ingredient-translations.js`: card language catalog and ingredient vocabulary.
 - `dist/sw.js`: offline cache lifecycle.
 - `dist/countries.json`: compact Natural Earth geometry.
-- `test/domain.test.js`: validation, translation coverage, known-location checks and offline service-worker behavior.
+- `test/`: profile migration, strict sharing/import validation, card instruction separation, translation coverage, known-location checks and offline service-worker behavior.
+
+## Earlier requests and remaining work
+
+Implemented: offline PWA with local profiles; opt-in location suggestions; manual language choice; eight offline languages; dietary, ethical and religious requirements; distinct allergy and intolerance sections; compact card; dark mode; no name field or bottom card slogan; “Please share this information”; shareable preference snapshots; browser print/PDF; import/export; GitHub Pages deployment. Use without an account remains the default.
+
+Not implemented yet:
+
+- **Optional SSO and sync.** Requires a chosen and configured identity/storage provider. Login alone does not sync local data. Keep guest profiles usable offline; account connection and the first sync must be explicit, with a choice when local and remote profiles differ. No application backend is currently hosted.
+- **Apple Wallet export.** Export one snapshot in the explicitly selected card language, optionally chosen after the existing location suggestion. Wallet uses a pass layout rather than the web card’s CSS. A usable `.pkpass` must be signed with an Apple-issued Pass Type ID certificate; issuance for arbitrary visitors needs a secure signing service or provider. No certificate/private key belongs in this public repository or browser bundle. Review front/back field visibility and long ingredient lists on an actual iPhone before release. The language should remain fixed when showing the pass to staff, rather than silently following the phone’s language. See [Apple’s Wallet requirements](https://developer.apple.com/wallet/get-started/).
+- **Svelte migration.** Discussed, but not performed. The current app uses buildless HTML/CSS/JavaScript without Vue or a runtime dependency.
 
 ## Attribution and review references
 

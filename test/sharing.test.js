@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {ALLERGENS, DIETS, LANGUAGES, emptyProfile} from '../dist/domain.js';
+import {ALLERGENS, INGREDIENTS, DIETS, LANGUAGES, emptyProfile} from '../dist/domain.js';
 import {createShareUrl, readSharedProfile} from '../dist/sharing.js';
 
 const fragment = data => '#card=' + btoa(JSON.stringify(data)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -28,17 +28,39 @@ test('links contain only food preferences and parsing does not mutate the origin
 
 test('invalid or unsupported links fail rather than silently losing requirements', () => {
   const valid = {v: 1, a: ['flaxseed'], d: ['vegan'], c: true, l: 'en'};
-  for (const data of [null, [], {...valid, v: 2}, {...valid, a: ['unknown-allergy']},
+  for (const data of [null, [], {...valid, v: 3}, {...valid, a: ['unknown-allergy']},
     {...valid, a: 'flaxseed'}, {...valid, d: ['unknown-diet']}, {...valid, d: null},
     {...valid, c: 'true'}, {...valid, l: 'xx'}, {...valid, a: [], d: []},
     {...valid, a: Array(100).fill('flaxseed')}]) {
     assert.throws(() => readSharedProfile(fragment(data)), /invalid or unsupported/);
   }
-  for (const hash of ['#card=', '#card=***', '#card=eA', '#card=' + 'x'.repeat(4097),
+  for (const hash of ['#card=', '#card=***', '#card=eA', '#card=' + 'x'.repeat(8193),
     fragment(valid) + '&card=duplicate', fragment(valid) + '&extra=field']) {
     assert.throws(() => readSharedProfile(hash), /invalid or unsupported/);
   }
   assert.throws(() => createShareUrl(emptyProfile(), 'https://example.test/'));
+});
+
+test('already-shared version 1 links preserve their original requirements',()=>{
+  const p=readSharedProfile('#card=eyJ2IjoxLCJhIjpbImZsYXhzZWVkIl0sImQiOlsidmVnYW4iXSwiYyI6dHJ1ZSwibCI6ImVuIn0');
+  assert.deepEqual(p,{...emptyProfile(),allergens:['flaxseed'],diets:['vegan']});
+});
+
+test('intolerance-only links preserve every ingredient, avoidance level and language',()=>{
+  for(const language of LANGUAGES){
+    const p={...emptyProfile(),language,intolerances:INGREDIENTS.map((ingredient,i)=>({ingredient,avoidance:i%2?'prefer':'must'}))};
+    const url=new URL(createShareUrl(p,'https://myfoodcard.github.io/app/'));
+    assert.ok(url.hash.length<8192);
+    assert.deepEqual(readSharedProfile(url.hash),p);
+  }
+});
+
+test('invalid avoidance instructions are never shared as a weaker requirement',()=>{
+  const valid={v:2,a:[],d:[],i:[['trehalose','must']],c:true,l:'en'};
+  for(const data of [{...valid,i:undefined},{...valid,i:null},{...valid,i:[['trehalose','optional']]},
+    {...valid,i:[['unknown','must']]},{...valid,i:[['trehalose','must','extra']]},{...valid,v:1}]){
+    assert.throws(()=>readSharedProfile(fragment(data)),/invalid or unsupported/);
+  }
 });
 
 test('ordinary anchors do not create shared profiles', () => {
