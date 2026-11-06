@@ -67,7 +67,7 @@ Location lookup uses generalized Natural Earth 1:110m polygons. Coastal location
 
 ## Earlier requests and remaining work
 
-Implemented: offline PWA with local profiles; opt-in location suggestions; manual language choice; eight offline languages; dietary, ethical and religious requirements; Must avoid and Avoid if possible sections; compact card; dark mode; no name field or bottom card slogan; “Please share this information”; shareable preference snapshots; browser print/PDF; import/export; GitHub Pages deployment. Use without an account remains the default.
+Implemented: offline PWA with local profiles; opt-in location suggestions; manual language choice; eight offline languages; dietary, ethical and religious requirements; Must avoid and Avoid if possible sections; compact card; dark mode; no name field or bottom card slogan; “Please share this information with the person preparing my food”; shareable preference snapshots; browser print/PDF; import/export; GitHub Pages deployment. Use without an account remains the default.
 
 Not implemented yet:
 
