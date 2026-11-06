@@ -5,6 +5,6 @@
   "type": "module",
   "scripts": {
     "test": "node --test test/*.test.js",
-    "check": "node --check dist/app.js && node --check dist/domain.js && node --check dist/translations.js && node --check dist/sw.js && node --check dist/theme.js && node --check dist/sharing.js && node --check dist/card.js && node --check dist/ingredient-translations.js && node --check dist/profile-storage.js && node --check dist/picker-events.js && node --check dist/qr.js && node --check dist/vendor/qrcodegen.js"
+    "check": "node --check dist/app.js && node --check dist/domain.js && node --check dist/translations.js && node --check dist/sw.js && node --check dist/theme.js && node --check dist/sharing.js && node --check dist/card.js && node --check dist/ingredient-translations.js && node --check dist/profile-storage.js && node --check dist/picker-events.js && node --check dist/sheet-dismiss.js && node --check dist/qr.js && node --check dist/vendor/qrcodegen.js"
   }
 }

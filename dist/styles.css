@@ -178,8 +178,9 @@ footer>span{font-weight:700}
 dialog{border:1px solid var(--line);border-radius:4px;color:var(--ink);background:var(--paper);max-height:calc(100dvh - 32px);padding:26px;box-shadow:8px 8px 0 #0006}
 dialog::backdrop{background:#090b15bd}
 #present-dialog{width:min(680px,calc(100vw - 24px));padding:20px}
-.present-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;color:var(--muted);margin-bottom:16px}
-.present-tools button{padding:8px 12px;flex-shrink:0}
+.card-drag-handle{display:none}
+.card-close{display:inline-grid;place-items:center;flex-shrink:0;width:44px;min-height:44px;border:0;border-radius:3px;background:transparent;color:var(--muted);font-size:26px;line-height:1;padding:0}
+.card-close:hover{background:var(--accent-soft);color:var(--ink)}
 #present-card .food-card{box-shadow:none}
 #about-dialog{max-width:560px}
 #about-dialog h2{font-size:28px;line-height:1.3;margin-bottom:22px;letter-spacing:-1px}
@@ -205,9 +206,12 @@ dialog::backdrop{background:#090b15bd}
   .editor{padding:20px}.save-status{flex-basis:auto;margin-left:auto;font-size:10px}
   .location-button{max-width:85px;text-align:end;line-height:1.4;font-size:10px;padding-inline-start:8px;min-height:44px;border-inline-start:1px solid var(--line)}
   .food-card{padding:18px}.card-actions .primary{flex-basis:100%}
-  #present-dialog{width:100%;max-width:none;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0;padding:16px;background:var(--card)}
+  #present-dialog{width:100%;max-width:none;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0;padding:16px;background:var(--card);overscroll-behavior:contain;transform:translateY(var(--sheet-drag,0px));transition:transform .16s ease-out}
+  #present-dialog.is-dragging{transition:none}
   body:has(#present-dialog[open]){overflow:hidden}
-  .present-tools{position:sticky;top:-16px;z-index:2;padding-block:8px;margin-bottom:12px;background:var(--card)}
+  .card-drag-handle{display:flex;align-items:center;justify-content:center;position:sticky;top:-16px;z-index:2;width:96px;height:28px;margin:-12px auto 4px;padding:0;border:0;border-radius:4px;background:var(--card);touch-action:none;user-select:none;cursor:grab}
+  .card-drag-handle span{display:block;width:36px;height:4px;border-radius:4px;background:var(--muted)}
+  .card-drag-handle:active{cursor:grabbing;transform:none}
   #present-card .food-card{padding:0;border:0;box-shadow:none}
   footer{margin-top:24px}
 }
@@ -247,8 +251,8 @@ dialog::backdrop{background:#090b15bd}
 .card-language-select{font:16px var(--font);color:var(--accent);background:var(--card);border:1px solid var(--line);border-radius:3px;max-width:180px;min-width:0;min-height:44px;padding:6px 24px 6px 8px;cursor:pointer}
 .card-controls .location-button{border:1px solid var(--line);border-radius:3px;padding:0;width:44px;max-width:none;min-height:44px;flex-shrink:0;background:var(--card);color:var(--accent);text-align:center}
 .card-controls .location-button span{font-size:23px}
-@media(max-width:430px){.card-brand{flex-wrap:nowrap;gap:8px}.card-logo{font-size:13px;flex-shrink:0}.card-controls .card-language-select{width:100%;max-width:148px;padding-inline:6px}.card-controls{flex-shrink:1}}
-@media print{.card-controls .location-button{display:none}.card-language-select{appearance:none;border:0;padding:0;min-height:0}}
+@media(max-width:430px){.card-brand{flex-wrap:nowrap;gap:8px}.card-logo{font-size:12px;letter-spacing:-.8px;flex-shrink:0}.card-controls .card-language-select{width:100%;max-width:148px;padding-inline:4px}.card-controls{flex-shrink:1}}
+@media print{.card-controls .location-button,.card-close,.card-drag-handle{display:none}.card-language-select{appearance:none;border:0;padding:0;min-height:0}}
 
 /* Preferences are the only inline workspace. The card opens on demand. */
 .floating-card{position:fixed;z-index:20;inset-inline-end:max(20px,env(safe-area-inset-right));bottom:calc(20px + env(safe-area-inset-bottom));min-width:182px;min-height:56px;padding:14px 18px;font-size:14px;box-shadow:4px 4px 0 var(--shadow)}
@@ -258,4 +262,4 @@ dialog::backdrop{background:#090b15bd}
 #present-dialog .card-actions .button{flex:1}
 #location-result{margin:0 0 16px}
 @media(max-width:430px){.floating-card{inset-inline-end:14px;bottom:calc(14px + env(safe-area-inset-bottom));max-width:calc(100vw - 28px)}main{padding-bottom:108px}}
-@media print{.floating-card{display:none!important}body:has(#present-dialog[open])>main{display:none}#present-dialog[open]{display:block!important;position:static;width:auto;max-width:none;height:auto;max-height:none;margin:0;padding:0;border:0;box-shadow:none}.present-tools{display:none!important}}
+@media print{.floating-card{display:none!important}body:has(#present-dialog[open])>main{display:none}#present-dialog[open]{display:block!important;position:static;width:auto;max-width:none;height:auto;max-height:none;margin:0;padding:0;border:0;box-shadow:none;transform:none}}

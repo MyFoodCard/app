@@ -5,6 +5,7 @@ import {cardMarkup,cardSummary} from './card.js';
 import {qrSvg} from './qr.js';
 import {PROFILE_KEY,LEGACY_PROFILE_KEYS,loadProfile} from './profile-storage.js';
 import {bindPickerDismissal} from './picker-events.js';
+import {bindSheetDismissal} from './sheet-dismiss.js';
 const $=id=>document.getElementById(id);
 const escape=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 let profile=emptyProfile(), sample=false, sharedProfile=null, offlineReady=false;
@@ -157,6 +158,7 @@ function showRestaurantCard(){
 }
 $('present-button').addEventListener('click',showRestaurantCard);
 $('close-present').addEventListener('click',()=>$('present-dialog').close());
+bindSheetDismissal($('present-dialog'),$('card-drag-handle'));
 $('present-dialog').addEventListener('close',()=>{
   if(sharedProfile)leaveSharedCard();
   if(sample){sample=false;syncEditor();renderCard();}
