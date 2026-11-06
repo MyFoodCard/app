@@ -86,20 +86,16 @@ function createIngredientPicker(root){
   return {sync,close};
 }
 function renderCard(){
-  const p=activeProfile(),t=translations[p.language];
-  const controls=$('card-controls');
-  $('food-card').innerHTML=cardMarkup(p,sample,requirementCount(p)?createShareUrl(p,new URL('./',window.location.href).href):'');
-  $('food-card').querySelector('.card-lang').replaceWith(controls);
-  $('food-card').lang=p.language;$('food-card').dir=t.dir;
+  const p=activeProfile(),count=requirementCount(p);
   $('sample-banner').hidden=!sample;
   $('shared-banner').hidden=!sharedProfile;
   document.body.classList.toggle('viewing-shared',Boolean(sharedProfile));
   $('location-button').hidden=Boolean(sharedProfile);
   $('share-status').textContent='Anyone with the link or QR code can read these preferences.';
-  const count=requirementCount(p);
-  $('selected-count').textContent=count?count+' selected':'Your personal card';
+  $('selected-count').textContent=count;
+  $('selected-count').hidden=!count;
   $('present-button').disabled=!count;$('copy-text-button').disabled=!count;$('share-button').disabled=!count;
-  $('sample-button')?.addEventListener('click',()=>{sample=true;renderCard();});
+  if($('present-dialog').open){if(count)renderPresentation();else $('present-dialog').close();}
 }
 function edit(){sample=false;save();renderCard();}
 buildOptions();syncEditor();renderCard();
@@ -110,6 +106,7 @@ function loadSharedLink(){
   $('link-message').hidden=true;
   try{sharedProfile=readSharedProfile(window.location.hash);}
   catch(error){sharedProfile=null;$('link-message').textContent=error.message+' Your saved preferences have not changed.';$('link-message').hidden=false;}
+  if(!sharedProfile&&$('present-dialog').open)$('present-dialog').close();
   syncEditor();renderCard();
   if(sharedProfile)showRestaurantCard();
 }
@@ -121,10 +118,10 @@ function leaveSharedCard(){
   $('link-message').hidden=true;$('location-result').hidden=true;
   syncEditor();renderCard();
 }
-$('exit-shared').addEventListener('click',()=>{leaveSharedCard();});
+$('exit-shared').addEventListener('click',()=>$('present-dialog').close());
 $('use-shared').addEventListener('click',()=>{
   if(!sharedProfile)return;
-  profile=cleanProfile(sharedProfile);save();leaveSharedCard();
+  profile=cleanProfile(sharedProfile);save();leaveSharedCard();$('present-dialog').close();
 });
 $('share-button').addEventListener('click',async()=>{
   const url=createShareUrl(activeProfile(),new URL('./',window.location.href).href);
@@ -143,27 +140,27 @@ $('cross-contact').addEventListener('change',event=>{profile.crossContact=event.
 function setCardLanguage(code){
   if(sharedProfile)sharedProfile.language=code;else{profile.language=code;save();}
   $('card-language').value=code;renderCard();$('location-result').hidden=true;
-  if($('present-dialog').open)renderPresentation();
 }
 $('card-language').addEventListener('change',event=>setCardLanguage(event.target.value));
-$('present-card').addEventListener('change',event=>{
-  if(event.target.matches('[data-present-language]'))setCardLanguage(event.target.value);
-});
-$('exit-sample').addEventListener('click',()=>{sample=false;renderCard();});
+$('sample-button').addEventListener('click',()=>{sample=true;renderCard();showRestaurantCard();});
+$('exit-sample').addEventListener('click',()=>$('present-dialog').close());
 function renderPresentation(){
-  const p=activeProfile(),t=translations[p.language];
-  $('present-card').innerHTML='<article class="food-card" lang="'+p.language+'" dir="'+t.dir+'">'+cardMarkup(p,sample,createShareUrl(p,new URL('./',window.location.href).href))+'</article>';
-  const select=document.createElement('select');select.className='card-language-select';
-  select.dataset.presentLanguage='';select.setAttribute('aria-label','Card language');
-  select.innerHTML=$('card-language').innerHTML;select.value=p.language;
-  $('present-card').querySelector('.card-lang').replaceWith(select);
+  const p=activeProfile(),t=translations[p.language],controls=$('card-controls');
+  $('present-card').innerHTML='<article id="food-card" class="food-card" lang="'+p.language+'" dir="'+t.dir+'">'+cardMarkup(p,sample,createShareUrl(p,new URL('./',window.location.href).href))+'</article>';
+  $('present-card').querySelector('.card-lang').replaceWith(controls);
+  $('card-language').value=p.language;
 }
 function showRestaurantCard(){
+  if(!requirementCount(activeProfile()))return;
   renderPresentation();
   if(!$('present-dialog').open)$('present-dialog').showModal();
 }
 $('present-button').addEventListener('click',showRestaurantCard);
 $('close-present').addEventListener('click',()=>$('present-dialog').close());
+$('present-dialog').addEventListener('close',()=>{
+  if(sharedProfile)leaveSharedCard();
+  if(sample){sample=false;syncEditor();renderCard();}
+});
 $('copy-text-button').addEventListener('click',async()=>{
   const p=activeProfile(),text=cardSummary(p);
   try{
@@ -175,7 +172,7 @@ $('copy-text-button').addEventListener('click',async()=>{
   }
 });
 $('close-text').addEventListener('click',()=>$('text-dialog').close());
-for(const id of ['food-card','present-card'])$(id).addEventListener('click',event=>{
+$('present-card').addEventListener('click',event=>{
   if(!event.target.closest('.card-qr'))return;
   $('large-qr').innerHTML=qrSvg(createShareUrl(activeProfile(),new URL('./',window.location.href).href));
   $('qr-dialog').showModal();

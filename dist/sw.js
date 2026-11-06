@@ -1,5 +1,5 @@
 const CACHE_PREFIX='myfoodcard-'+encodeURIComponent(new URL(self.registration.scope).pathname)+'-';
-const CACHE=CACHE_PREFIX+'v11';
+const CACHE=CACHE_PREFIX+'v12';
 const FILES=['./','./index.html','./styles.css','./app.js','./picker-events.js','./theme.js','./sharing.js','./profile-storage.js','./card.js','./qr.js','./vendor/qrcodegen.js','./domain.js','./translations.js','./ingredient-translations.js','./countries.json','./icon.svg','./manifest.webmanifest'];
 const urls=FILES.map(file=>new URL(file,self.registration.scope).href);
 self.addEventListener('install',event=>event.waitUntil((async()=>{

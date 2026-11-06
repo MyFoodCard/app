@@ -19,7 +19,7 @@ if ('serviceWorker' in navigator) {
 <script type="module" src="./app.js"></script>
 </head>
 <body>
-<a class="skip-link" href="#main">Skip to your card</a>
+<a class="skip-link" href="#main">Skip to your preferences</a>
 <header class="site-header">
   <a class="brand" href="./" aria-label="MyFoodCard home"><img src="./icon.svg" alt="" width="39" height="39"><span>myfoodcard<span class="brand-dot">.</span></span></a>
   <div class="header-right"><span id="offline-status" class="status" role="status"><span class="status-dot"></span>Preparing offline</span><label class="theme-control" for="theme-select"><span>Theme</span><select id="theme-select"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></div>
@@ -30,35 +30,35 @@ if ('serviceWorker' in navigator) {
 <h1>Your food needs.<br><em>In the local language.</em></h1>
 <p class="intro-copy">Set your preferences. Translate. Show your card.</p>
 </section>
+<p id="link-message" class="location-result" role="alert" hidden></p>
 <div class="workspace">
 <aside class="editor" id="editor">
- <div class="section-top"><span class="step">01</span><h2>Your preferences</h2><span id="save-status" class="save-status" role="status">On this device</span></div>
+ <div class="section-top"><h2>Your preferences</h2><span id="save-status" class="save-status" role="status">On this device</span></div>
  <fieldset><legend>How you eat</legend><p class="field-hint">Your choices, values and requirements.</p><div id="diet-options" class="chips"></div></fieldset>
  <fieldset class="ingredient-fieldset required-picker" data-food-group="mustAvoid"><legend>Must avoid</legend><p class="field-hint">Allergies and any ingredients you cannot eat.</p><ul class="selected-ingredients" aria-label="Selected ingredients to avoid"></ul><p class="selection-empty">No ingredients selected.</p><div class="ingredient-search-label"><label for="must-search">Add an ingredient</label><button class="browse-ingredients text-button" type="button" aria-controls="must-results" aria-expanded="false">Browse all</button></div><input type="search" id="must-search" placeholder="Search ingredients…" autocomplete="off" aria-controls="must-results"><ul id="must-results" class="ingredient-results" aria-label="Ingredients to add to Must avoid" hidden></ul><p class="field-hint search-status" role="status"></p></fieldset>
  <fieldset class="ingredient-fieldset" data-food-group="avoidIfPossible"><legend>Avoid if possible</legend><p class="field-hint">Ingredients you prefer to leave out when possible.</p><ul class="selected-ingredients" aria-label="Selected ingredients to avoid if possible"></ul><p class="selection-empty">No ingredients selected.</p><div class="ingredient-search-label"><label for="prefer-search">Add an ingredient</label><button class="browse-ingredients text-button" type="button" aria-controls="prefer-results" aria-expanded="false">Browse all</button></div><input type="search" id="prefer-search" placeholder="Search ingredients…" autocomplete="off" aria-controls="prefer-results"><ul id="prefer-results" class="ingredient-results" aria-label="Ingredients to add to Avoid if possible" hidden></ul><p class="field-hint search-status" role="status"></p></fieldset>
  <label class="check-row"><input id="cross-contact" type="checkbox" checked><span><strong>Ask to avoid cross-contact</strong><small>Includes shared utensils, surfaces and cooking oil for ingredients in “Must avoid”.</small></span></label>
  <p class="local-note"><strong>Saved on your device.</strong> No account needed.</p>
  <div class="profile-actions"><button id="export-button" class="text-button" type="button">Export profile ↗</button><label class="text-button import-label" for="import-file" tabindex="0" role="button">Import profile</label><input type="file" id="import-file" accept=".json,application/json" hidden><button id="reset-button" class="text-button quiet" type="button">Clear</button></div>
+ <button id="sample-button" class="text-button sample-trigger" type="button">Try a sample card ↗</button>
  <p id="form-message" class="message" role="status"></p>
 </aside>
-<section class="preview" id="preview" aria-label="Restaurant card preview">
- <div class="section-top"><span class="step">02</span><h2>Your card</h2><span class="card-count" id="selected-count">Your personal card</span></div>
- <div id="shared-banner" class="shared-banner" hidden><div><strong>Shared card</strong><p>Viewing someone’s preferences. Your saved profile has not changed.</p></div><div class="shared-actions"><button id="use-shared" class="button secondary">Use these preferences</button><button id="exit-shared" class="text-button">Back to my card</button></div></div>
- <p id="link-message" class="location-result" role="alert" hidden></p>
- <div id="card-controls" class="card-controls"><label class="sr-only" for="card-language">Card language</label><select id="card-language" class="card-language-select"></select><button id="location-button" class="location-button" title="Suggest a language using your location" aria-label="Use my location to suggest a language"><span aria-hidden="true">⌖</span></button></div>
- <div id="location-result" class="location-result" role="status" hidden></div>
- <div id="sample-banner" class="sample-banner" hidden><span>Sample card · vegan + flaxseed allergy</span><button id="exit-sample" class="text-button">Back to my card</button></div>
- <div class="card-stage">
-  <article id="food-card" class="food-card" aria-label="Your translated restaurant card"></article>
- </div>
- <div class="card-actions"><button id="present-button" class="button primary" disabled><span aria-hidden="true">⛶</span> Show to restaurant</button><button id="copy-text-button" class="button secondary" disabled>Copy text</button><button id="share-button" class="button secondary" disabled>Copy link</button></div>
- <p id="share-status" class="share-status" role="status">Anyone with the link or QR code can read these preferences.</p>
- <details class="translation-note"><summary>About these translations</summary><p>This early preview uses draft translations, not professionally reviewed translations. Confirm wording with a fluent speaker before relying on a card for an allergy. Always discuss ingredients and preparation with restaurant staff.</p></details>
-</section>
+
 </div>
 <footer><span>myfoodcard<span class="brand-dot">.</span></span><button id="about-button" class="text-button">How it works</button></footer>
 </main>
-<dialog id="present-dialog" aria-label="Restaurant presentation"><div class="present-tools"><span>Show this screen to restaurant staff</span><button id="close-present" class="button secondary">Close ✕</button></div><div id="present-card"></div></dialog>
+<button id="present-button" class="button primary floating-card" type="button" aria-haspopup="dialog" aria-controls="present-dialog" disabled><span aria-hidden="true">⛶</span> Show card <span id="selected-count" class="floating-count" aria-hidden="true" hidden></span></button>
+<dialog id="present-dialog" aria-label="Restaurant presentation">
+<div class="present-tools"><span>Show this screen to restaurant staff</span><button id="close-present" class="button secondary">Close ✕</button></div>
+<div id="shared-banner" class="shared-banner" hidden><div><strong>Shared card</strong><p>Viewing someone’s preferences. Your saved profile has not changed.</p></div><div class="shared-actions"><button id="use-shared" class="button secondary">Use these preferences</button><button id="exit-shared" class="text-button">My preferences</button></div></div>
+<div id="sample-banner" class="sample-banner" hidden><span>Sample card · vegan + flaxseed allergy</span><button id="exit-sample" class="text-button">Back to preferences</button></div>
+<div id="card-controls" class="card-controls"><label class="sr-only" for="card-language">Card language</label><select id="card-language" class="card-language-select"></select><button id="location-button" class="location-button" title="Suggest a language using your location" aria-label="Use my location to suggest a language"><span aria-hidden="true">⌖</span></button></div>
+<div id="location-result" class="location-result" role="status" hidden></div>
+<div id="present-card"></div>
+<div class="card-actions"><button id="copy-text-button" class="button secondary" disabled>Copy text</button><button id="share-button" class="button secondary" disabled>Copy link</button></div>
+<p id="share-status" class="share-status" role="status">Anyone with the link or QR code can read these preferences.</p>
+<details class="translation-note"><summary>About these translations</summary><p>This early preview uses draft translations, not professionally reviewed translations. Confirm wording with a fluent speaker before relying on a card for an allergy. Always discuss ingredients and preparation with restaurant staff.</p></details>
+</dialog>
 <dialog id="share-dialog" aria-labelledby="share-title"><h2 id="share-title">Share this card</h2><p>Copy this link and paste it into a message. It includes the preferences and card language shown on your card.</p><label for="share-url">Card link</label><input id="share-url" type="text" readonly><p class="muted">Anyone with the link can read these preferences. This is a snapshot; future edits won’t change the shared link.</p><button id="close-share" class="button secondary">Done</button></dialog>
 <dialog id="text-dialog" aria-labelledby="text-title"><h2 id="text-title">Copy your summary</h2><p>Copy this text into a form or message.</p><label class="sr-only" for="summary-text">Preference summary</label><textarea id="summary-text" readonly rows="8"></textarea><button id="close-text" class="button secondary">Done</button></dialog>
 <dialog id="qr-dialog" aria-labelledby="qr-title"><h2 id="qr-title">Scan to open this card</h2><div id="large-qr"></div><p>Anyone who scans this code can read the preferences on this card.</p><button id="close-qr" class="button secondary">Done</button></dialog>

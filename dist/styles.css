@@ -63,18 +63,18 @@ h1,h2,h3,p{margin:0}
 .theme-control{display:flex;align-items:center;gap:9px;font-size:11px;color:var(--muted)}
 .theme-control select{min-height:44px;padding:6px 8px;border:1px solid var(--line);border-radius:3px;background:var(--surface);color:var(--ink);font-size:16px;cursor:pointer}
 select option{color:var(--ink);background:var(--surface)}
-main{max-width:1224px;margin:0 auto;padding:0 0 20px}
+main{max-width:680px;margin:0 auto;padding:0 24px 100px}
 .intro{padding:32px 0 28px}
 .eyebrow{color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.1em;margin-bottom:10px}
 h1{font-size:clamp(28px,3.2vw,40px);line-height:1.2;letter-spacing:-1.5px;font-weight:700}
 h1 em{font:inherit;color:var(--accent)}
 .intro-copy{color:var(--muted);font-size:13px;margin-top:12px}
-.workspace{display:grid;grid-template-columns:380px minmax(0,1fr);gap:24px;align-items:start}
+.workspace{display:block}
 .editor{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:22px}
 .section-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .section-top h2{font-size:15px;line-height:1.4;font-weight:700;letter-spacing:-.4px}
-.step{font-size:11px;width:26px;height:26px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent);border-radius:2px;font-weight:700}
-.save-status,.card-count{font-size:10px;margin-left:auto;color:var(--muted)}
+
+.save-status{font-size:10px;margin-left:auto;color:var(--muted)}
 .muted{color:var(--muted)}
 fieldset{border:0;padding:0;margin:22px 0 0;min-width:0}
 legend{font-size:14px;font-weight:700;padding:0}
@@ -120,14 +120,12 @@ input::placeholder{color:var(--muted);opacity:1}
 .quiet{color:var(--muted);margin-left:auto}
 .message{font-size:12px;margin-top:8px;color:var(--allergy)}
 .message:empty{display:none}
-.preview{min-width:0;padding:0 4px}
-.preview .section-top{padding:0 0 18px;min-height:48px}
 
 .location-button{font-size:11px;color:var(--accent);border:0;background:transparent;padding:8px 0 8px 14px;border-left:1px solid var(--line);min-height:44px;flex-shrink:0}
 .location-button>span{font-size:18px;vertical-align:-1px}
 .location-result{font-size:12px;background:var(--surface);padding:12px;border:1px solid var(--line);border-radius:3px;margin-top:10px}
 .location-result button{color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);border-radius:3px;padding:10px;margin:8px 5px 0 0}
-.card-stage{padding:18px 0 0}
+
 .food-card{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:3px;box-shadow:5px 5px 0 var(--shadow);padding:22px;overflow-wrap:anywhere}
 .card-brand{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .card-logo{font-size:15px;font-weight:700;letter-spacing:-.6px;direction:ltr;display:inline-block}
@@ -175,9 +173,8 @@ input::placeholder{color:var(--muted);opacity:1}
 .shared-banner{align-items:stretch;flex-direction:column;margin:0 0 16px;font-size:12px}
 .shared-banner p{color:var(--muted);margin-top:4px}
 .shared-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
-.viewing-shared .workspace{display:block;max-width:720px;margin:28px auto 0}
+.viewing-shared .workspace{display:block}
 .viewing-shared .editor,.viewing-shared .intro{display:none}
-.viewing-shared .preview{display:block}
 footer{display:flex;justify-content:space-between;align-items:center;color:var(--muted);margin-top:28px;padding:14px 0;border-top:1px solid var(--line);font-size:11px;gap:14px}
 footer>span{font-weight:700}
 
@@ -204,19 +201,19 @@ dialog::backdrop{background:#090b15bd}
 #share-dialog p{font-size:13px;margin:16px 0}
 #share-dialog label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}
 .noscript{padding:24px;background:var(--allergy-bg);text-align:center}
-@media(max-width:1280px){main{margin:0 28px}.workspace{grid-template-columns:350px minmax(0,1fr)}}
-@media(max-width:980px){.workspace{grid-template-columns:310px minmax(0,1fr);gap:18px}.editor{padding:18px}.card-count{display:none}.food-card{padding:18px}.location-button{border:0;padding:4px 0;min-height:36px}.card-actions .primary{flex-basis:100%}.card-actions .secondary{flex:1}.save-status{flex-basis:100%;margin-left:36px}}
+@media(max-width:1280px){main{margin:0 auto}.workspace{display:block}}
+@media(max-width:980px){.workspace{display:block}.editor{padding:18px}.food-card{padding:18px}.location-button{border:0;padding:4px 0;min-height:36px}.card-actions .primary{flex-basis:100%}.card-actions .secondary{flex:1}}
 @media(max-width:700px){
   .site-header{padding:12px 18px;min-height:74px;gap:12px}
   .brand{font-size:19px}.brand img{width:30px;height:30px}
   .theme-control>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
   .header-right{gap:12px}.status{font-size:10px}
-  main{margin:0 18px}.intro{padding:24px 0}.eyebrow{font-size:10px}h1{font-size:30px;letter-spacing:-1.3px}.intro-copy{font-size:12px;max-width:36ch}
+  main{margin:0 auto;padding-inline:18px}.intro{padding:24px 0}.eyebrow{font-size:10px}h1{font-size:30px;letter-spacing:-1.3px}.intro-copy{font-size:12px;max-width:36ch}
 
-  .workspace{display:block}.preview{display:block;padding:0;margin-top:24px}
-  .editor{padding:20px}.save-status{flex-basis:auto;margin-left:auto;font-size:10px}.card-count{display:block}
+  .workspace{display:block}
+  .editor{padding:20px}.save-status{flex-basis:auto;margin-left:auto;font-size:10px}
   .location-button{max-width:85px;text-align:end;line-height:1.4;font-size:10px;padding-inline-start:8px;min-height:44px;border-inline-start:1px solid var(--line)}
-  .food-card{padding:18px}.card-allergies,.card-preferences{padding:12px}.card-actions .primary{flex-basis:100%}.card-count{font-size:10px}
+  .food-card{padding:18px}.card-allergies,.card-preferences{padding:12px}.card-actions .primary{flex-basis:100%}
   #present-dialog{width:100%;max-width:none;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0;padding:16px;background:var(--card)}
   body:has(#present-dialog[open]){overflow:hidden}
   .present-tools{position:sticky;top:-16px;z-index:2;padding-block:8px;margin-bottom:12px;background:var(--card)}
@@ -225,7 +222,7 @@ dialog::backdrop{background:#090b15bd}
 }
 @media(max-width:430px){
   .site-header{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:12px 14px}.header-right{display:contents}.theme-control{grid-column:2;grid-row:1}.status{grid-column:1 / -1;grid-row:2}.brand{font-size:18px;gap:7px}.brand img{width:28px;height:28px}.theme-control select{max-width:112px}
-  main{margin:0 14px}h1{font-size:26px;letter-spacing:-1px}.intro{padding:22px 0}.editor{padding:16px}.section-top{gap:8px}.section-top h2{font-size:14px}.save-status{flex-basis:100%;margin-left:34px}.card-count{display:none}
+  main{margin:0 auto;padding-inline:14px}h1{font-size:26px;letter-spacing:-1px}.intro{padding:22px 0}.editor{padding:16px}.section-top{gap:8px}.section-top h2{font-size:14px}
   .food-card{padding:14px;box-shadow:3px 3px 0 var(--shadow)}.card-allergies,.card-preferences{padding:10px}.card-intro{font-size:12px}.allergen-list li{font-size:15px}
   .profile-actions{gap:10px}.profile-actions .text-button{font-size:10px}.sample-banner{flex-wrap:wrap}
 }
@@ -234,8 +231,8 @@ dialog::backdrop{background:#090b15bd}
   :root,:root[data-theme]{--ink:#20212b;--muted:#555866;--paper:#fff;--surface:#fff;--card:#fff;--line:#b8bac4;--accent:#5032af;--accent-soft:#f2eeff;--allergy:#932c1c;--allergy-bg:#fff5f0;--allergy-line:#c9806e;--allergy-text:#75392e;color-scheme:light}
   @page{size:A5;margin:12mm}
   body{background:#fff}
-  .site-header,.intro,.editor,.preview>.section-top,.location-result,.sample-banner,.card-actions,.translation-note,.shared-banner,.share-status,#link-message,footer,dialog,.skip-link{display:none!important}
-  main{margin:0;padding:0;max-width:none}.workspace{display:block}.preview{display:block!important;background:transparent;border:0;padding:0}.viewing-shared .workspace{margin:0;max-width:none}.card-stage{padding:0}.food-card{box-shadow:none;border:0;padding:0;break-inside:avoid}.card-allergies{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .site-header,.intro,.editor,.location-result,.sample-banner,.card-actions,.translation-note,.shared-banner,.share-status,#link-message,footer,dialog,.skip-link{display:none!important}
+  main{margin:0;padding:0;max-width:none}.workspace{display:block}.viewing-shared .workspace{display:block}.food-card{box-shadow:none;border:0;padding:0;break-inside:avoid}.card-allergies{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 /* Sharing is generated locally, including the QR image. */
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
@@ -259,5 +256,15 @@ dialog::backdrop{background:#090b15bd}
 .card-language-select{font:16px var(--font);color:var(--accent);background:var(--card);border:1px solid var(--line);border-radius:3px;max-width:180px;min-width:0;min-height:44px;padding:6px 24px 6px 8px;cursor:pointer}
 .card-controls .location-button{border:1px solid var(--line);border-radius:3px;padding:0;width:44px;max-width:none;min-height:44px;flex-shrink:0;background:var(--card);color:var(--accent);text-align:center}
 .card-controls .location-button span{font-size:23px}
-@media(max-width:430px){.card-controls{width:100%;margin-inline-start:0}.card-controls .card-language-select{flex:1;max-width:none}.card-brand>.card-language-select{max-width:160px}.viewing-shared .preview{margin-top:0}}
+@media(max-width:430px){.card-controls{width:100%;margin-inline-start:0}.card-controls .card-language-select{flex:1;max-width:none}.card-brand>.card-language-select{max-width:160px}}
 @media print{.card-controls .location-button{display:none}.card-language-select{appearance:none;border:0;padding:0;min-height:0}}
+
+/* Preferences are the only inline workspace. The card opens on demand. */
+.floating-card{position:fixed;z-index:20;inset-inline-end:max(20px,env(safe-area-inset-right));bottom:calc(20px + env(safe-area-inset-bottom));min-width:182px;min-height:56px;padding:14px 18px;font-size:14px;box-shadow:4px 4px 0 var(--shadow)}
+.floating-card .floating-count{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 5px;border:1px solid currentColor;font-size:11px;line-height:1}
+.sample-trigger{margin-top:4px}
+#present-dialog .card-actions{justify-content:flex-end}
+#present-dialog .card-actions .button{flex:1}
+#location-result{margin:0 0 16px}
+@media(max-width:430px){.floating-card{inset-inline-end:14px;bottom:calc(14px + env(safe-area-inset-bottom));max-width:calc(100vw - 28px)}main{padding-bottom:108px}}
+@media print{.floating-card{display:none!important}body:has(#present-dialog[open])>main{display:none}#present-dialog[open]{display:block!important;position:static;width:auto;max-width:none;height:auto;max-height:none;margin:0;padding:0;border:0;box-shadow:none}.present-tools{display:none!important}}
