@@ -127,30 +127,25 @@ input::placeholder{color:var(--muted);opacity:1}
 .location-result button{color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);border-radius:3px;padding:10px;margin:8px 5px 0 0}
 
 .food-card{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:3px;box-shadow:5px 5px 0 var(--shadow);padding:22px;overflow-wrap:anywhere}
-.card-brand{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.card-brand{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
 .card-logo{font-size:15px;font-weight:700;letter-spacing:-.6px;direction:ltr;display:inline-block}
 .card-lang{background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent);border-radius:2px;font-size:11px;padding:2px 6px;letter-spacing:.06em}
-.card-intro{font-size:13px;line-height:1.6;color:var(--muted)}
-.card-allergies,.card-preferences{border:1px solid var(--allergy-line);border-inline-start:3px solid var(--allergy);background:var(--allergy-bg);border-radius:2px;padding:12px 14px;margin-top:16px}
+.card-intro{font-size:14px;line-height:1.45;color:var(--muted)}
+.card-allergies,.card-preferences{border:1px solid var(--allergy-line);border-inline-start:3px solid var(--allergy);background:var(--allergy-bg);border-radius:2px;padding:10px 12px;margin-top:12px}
 .card-allergies h3,.card-preferences h3{font-size:13px;font-weight:700;color:var(--allergy);text-transform:uppercase;display:flex;gap:8px;align-items:center}
 .alert-icon{font-size:11px;border:1px solid currentColor;width:16px;height:16px;display:inline-grid;place-items:center;line-height:1;flex-shrink:0}
-.card-allergies p{font-size:13px;color:var(--allergy-text);margin-top:6px;line-height:1.6}
-.allergen-list{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px}
-.allergen-list li{border:1px solid var(--allergy-line);background:var(--card);padding:4px 8px;color:var(--allergy);border-radius:2px;font-size:16px;font-weight:700;max-width:100%}
-.card-allergies .cross-contact{font-size:12px;margin-top:12px;padding-top:10px;border-top:1px solid var(--allergy-line)}
+.allergen-list{margin:7px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+.allergen-list li{border:1px solid var(--allergy-line);background:var(--card);padding:4px 8px;color:var(--allergy);border-radius:2px;font-size:18px;line-height:1.4;font-weight:700;max-width:100%}
+.card-allergies .cross-contact{font-size:14px;line-height:1.45;color:var(--allergy-text);margin-top:8px;padding-top:8px;border-top:1px solid var(--allergy-line)}
 .card-preferences{background:transparent;border-color:var(--line);border-inline-start-color:var(--accent)}
 .card-preferences h3{color:var(--accent)}
-.card-preferences p{font-size:13px;color:var(--muted);line-height:1.6;margin-top:6px}
 .card-preferences .allergen-list li{color:var(--ink);border-color:var(--line)}
-.card-diets{margin:18px 0 0}
-.card-diets>h3{font-size:12px;color:var(--accent);text-transform:uppercase;margin-bottom:10px}
-.diet-item{display:flex;gap:10px;margin-top:10px}
-.diet-check{width:21px;height:21px;display:grid;place-items:center;border:1px solid var(--accent);color:var(--accent);flex-shrink:0;font-size:12px;line-height:1;margin-top:2px}
-.diet-item h4{font-size:15px;margin:0 0 3px;font-weight:700}
-.diet-item p{font-size:13px;line-height:1.6;color:var(--muted)}
-.card-confirm{font-size:12px;line-height:1.6;color:var(--muted);border-top:1px dashed var(--line);padding-top:14px;margin-top:18px}
-.card-footer{margin-top:12px}
-.card-thanks{font-size:12px;color:var(--accent)}
+.card-diets{margin-top:12px}
+.diet-item{font-size:14px;line-height:1.5;color:var(--muted)}
+.diet-item+.diet-item{margin-top:8px}
+.diet-item strong{font-size:16px;font-weight:700;color:var(--accent)}
+.card-confirm{font-size:13px;line-height:1.5;color:var(--muted);min-width:0}
+.card-footer{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
 .card-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
 .button{padding:11px 14px;min-height:46px;border-radius:3px;border:1px solid var(--line);font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .primary{background:var(--primary);color:var(--on-primary);border-color:var(--on-primary);flex:1}
@@ -186,10 +181,6 @@ dialog::backdrop{background:#090b15bd}
 .present-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;color:var(--muted);margin-bottom:16px}
 .present-tools button{padding:8px 12px;flex-shrink:0}
 #present-card .food-card{box-shadow:none}
-#present-card .card-intro,#present-card .card-allergies p,#present-card .card-preferences p,#present-card .diet-item p,#present-card .card-confirm{font-size:16px}
-#present-card .card-allergies h3,#present-card .card-diets>h3,#present-card .card-preferences h3{font-size:14px}
-#present-card .allergen-list li{font-size:21px}
-#present-card .diet-item h4{font-size:18px}
 #about-dialog{max-width:560px}
 #about-dialog h2{font-size:28px;line-height:1.3;margin-bottom:22px;letter-spacing:-1px}
 #about-dialog li{margin:16px 0;padding-left:4px;font-size:13px}
@@ -213,7 +204,7 @@ dialog::backdrop{background:#090b15bd}
   .workspace{display:block}
   .editor{padding:20px}.save-status{flex-basis:auto;margin-left:auto;font-size:10px}
   .location-button{max-width:85px;text-align:end;line-height:1.4;font-size:10px;padding-inline-start:8px;min-height:44px;border-inline-start:1px solid var(--line)}
-  .food-card{padding:18px}.card-allergies,.card-preferences{padding:12px}.card-actions .primary{flex-basis:100%}
+  .food-card{padding:18px}.card-actions .primary{flex-basis:100%}
   #present-dialog{width:100%;max-width:none;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0;padding:16px;background:var(--card)}
   body:has(#present-dialog[open]){overflow:hidden}
   .present-tools{position:sticky;top:-16px;z-index:2;padding-block:8px;margin-bottom:12px;background:var(--card)}
@@ -223,7 +214,7 @@ dialog::backdrop{background:#090b15bd}
 @media(max-width:430px){
   .site-header{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:12px 14px}.header-right{display:contents}.theme-control{grid-column:2;grid-row:1}.status{grid-column:1 / -1;grid-row:2}.brand{font-size:18px;gap:7px}.brand img{width:28px;height:28px}.theme-control select{max-width:112px}
   main{margin:0 auto;padding-inline:14px}h1{font-size:26px;letter-spacing:-1px}.intro{padding:22px 0}.editor{padding:16px}.section-top{gap:8px}.section-top h2{font-size:14px}
-  .food-card{padding:14px;box-shadow:3px 3px 0 var(--shadow)}.card-allergies,.card-preferences{padding:10px}.card-intro{font-size:12px}.allergen-list li{font-size:15px}
+  .food-card{padding:14px;box-shadow:3px 3px 0 var(--shadow)}.card-allergies,.card-preferences{padding:10px}
   .profile-actions{gap:10px}.profile-actions .text-button{font-size:10px}.sample-banner{flex-wrap:wrap}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
@@ -236,7 +227,7 @@ dialog::backdrop{background:#090b15bd}
 }
 /* Sharing is generated locally, including the QR image. */
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.card-footer{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.card-footer{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .card-qr{width:124px;flex-shrink:0;background:transparent;color:var(--muted);padding:0;border:0;text-align:center}
 .card-qr svg{display:block;width:100%;height:auto;border:1px solid #fff}
 .card-qr span{display:block;margin-top:5px;font-size:10px;line-height:1.4}
@@ -252,11 +243,11 @@ dialog::backdrop{background:#090b15bd}
 
 /* A single workspace; each card carries its own language control. */
 .card-brand{flex-wrap:wrap}
-.card-controls{display:flex;align-items:center;gap:8px;max-width:100%;margin-inline-start:auto}
+.card-controls{display:flex;align-items:center;gap:6px;min-width:0;max-width:100%;margin-inline-start:auto}
 .card-language-select{font:16px var(--font);color:var(--accent);background:var(--card);border:1px solid var(--line);border-radius:3px;max-width:180px;min-width:0;min-height:44px;padding:6px 24px 6px 8px;cursor:pointer}
 .card-controls .location-button{border:1px solid var(--line);border-radius:3px;padding:0;width:44px;max-width:none;min-height:44px;flex-shrink:0;background:var(--card);color:var(--accent);text-align:center}
 .card-controls .location-button span{font-size:23px}
-@media(max-width:430px){.card-controls{width:100%;margin-inline-start:0}.card-controls .card-language-select{flex:1;max-width:none}.card-brand>.card-language-select{max-width:160px}}
+@media(max-width:430px){.card-brand{flex-wrap:nowrap;gap:8px}.card-logo{font-size:13px;flex-shrink:0}.card-controls .card-language-select{width:100%;max-width:148px;padding-inline:6px}.card-controls{flex-shrink:1}}
 @media print{.card-controls .location-button{display:none}.card-language-select{appearance:none;border:0;padding:0;min-height:0}}
 
 /* Preferences are the only inline workspace. The card opens on demand. */

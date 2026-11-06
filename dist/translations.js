@@ -146,8 +146,22 @@ th:make('ไทย','Thai','ltr',
 
 const qrLabels={en:'Scan card',sk:'Naskenovať kartu',cs:'Naskenovat kartu',de:'Karte scannen',fr:'Scanner la carte',es:'Escanear tarjeta',ar:'مسح البطاقة',th:'สแกนการ์ด'};
 
+// Short contextual copy for the card. Standalone summaries retain the explicit
+// "Must avoid" reference so cross-contact instructions cannot apply to the wrong list.
+const cardNotes={
+  en:{crossContact:'Prevent cross-contact, including via utensils, surfaces and cooking oil.',confirm:'Check ingredients and preparation. Tell me if unsure or unable to meet these needs.'},
+  sk:{crossContact:'Zabráňte kontaktu aj cez náčinie, pracovné plochy a olej na varenie.',confirm:'Overte zloženie a prípravu. Ak si nie ste istí alebo neviete požiadavky splniť, povedzte mi to.'},
+  cs:{crossContact:'Zabraňte kontaktu i přes náčiní, pracovní plochy a olej na vaření.',confirm:'Ověřte složení a přípravu. Pokud si nejste jistí nebo nemůžete požadavky splnit, řekněte mi to.'},
+  de:{crossContact:'Verhindern Sie Kreuzkontakt, auch über Utensilien, Arbeitsflächen und Speiseöl.',confirm:'Prüfen Sie Zutaten und Zubereitung. Sagen Sie mir, wenn etwas unklar oder nicht erfüllbar ist.'},
+  fr:{crossContact:'Évitez tout contact croisé, y compris par les ustensiles, surfaces et huiles de cuisson.',confirm:'Vérifiez les ingrédients et la préparation. Prévenez-moi en cas de doute ou d’impossibilité.'},
+  es:{crossContact:'Evite el contacto cruzado, también mediante utensilios, superficies y aceite de cocina.',confirm:'Compruebe ingredientes y preparación. Avíseme si tiene dudas o no puede cumplir estas necesidades.'},
+  ar:{crossContact:'امنعوا التلامس المتبادل، بما في ذلك عبر الأدوات والأسطح وزيت الطهي.',confirm:'تحقّقوا من المكونات والتحضير. أخبروني إن لم تكونوا متأكدين أو تعذّر تلبية هذه الاحتياجات.'},
+  th:{crossContact:'ป้องกันการสัมผัสข้าม รวมถึงผ่านอุปกรณ์ พื้นผิว และน้ำมันปรุงอาหาร',confirm:'ตรวจสอบส่วนผสมและวิธีเตรียม หากไม่แน่ใจหรือทำตามข้อกำหนดไม่ได้ กรุณาแจ้งให้ทราบ'}
+};
+
 for (const [code,t] of Object.entries(translations)) {
   t.qrLabel=qrLabels[code];
+  t.cardNotes=cardNotes[code];
   const extra=ingredientTranslations[code];
   t.ingredients={...t.allergens,...extra.foods};
   t.allergens=Object.fromEntries(ALLERGENS.map(key=>[key,t.ingredients[key]]));
