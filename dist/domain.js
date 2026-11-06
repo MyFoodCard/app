@@ -65,5 +65,30 @@ export function countryAt(lon,lat,countries){
     return polygons.some(rings=>inPolygon(lon,lat,rings));
   })||null;
 }
+// The bundled map generalizes coastlines. Offer nearby land, never a silent language switch.
+export function countrySuggestions(lon,lat,countries){
+  if(!Number.isFinite(lon)||!Number.isFinite(lat)||Math.abs(lon)>180||Math.abs(lat)>90)return [];
+  const inside=countryAt(lon,lat,countries);
+  if(inside)return [{country:inside,distanceKm:0,approximate:false}];
+  const wrap=angle=>((angle+540)%360)-180;
+  const scaleX=111.195*Math.cos(lat*Math.PI/180),scaleY=111.195;
+  const distanceToRing=ring=>{
+    let nearest=Infinity;
+    for(let i=0,j=ring.length-1;i<ring.length;j=i++){
+      const ax=wrap(ring[j][0]-lon)*scaleX,ay=(ring[j][1]-lat)*scaleY;
+      const bx=ax+wrap(ring[i][0]-ring[j][0])*scaleX,by=(ring[i][1]-lat)*scaleY;
+      const dx=bx-ax,dy=by-ay,length=dx*dx+dy*dy;
+      const t=length?Math.max(0,Math.min(1,-(ax*dx+ay*dy)/length)):0;
+      nearest=Math.min(nearest,Math.hypot(ax+t*dx,ay+t*dy));
+    }
+    return nearest;
+  };
+  return countries.map(country=>{
+    const {type,coordinates}=country.geometry;
+    const polygons=type==='Polygon'?[coordinates]:type==='MultiPolygon'?coordinates:[];
+    const distanceKm=Math.min(...polygons.flatMap(rings=>rings.map(distanceToRing)));
+    return {country,distanceKm,approximate:true};
+  }).filter(match=>match.distanceKm<=25).sort((a,b)=>a.distanceKm-b.distanceKm).slice(0,3);
+}
 const COUNTRY_LANGUAGES={SVK:['sk'],CZE:['cs'],DEU:['de'],AUT:['de'],CHE:['de','fr'],LIE:['de'],FRA:['fr'],BEL:['fr','de'],LUX:['fr','de'],ESP:['es'],MEX:['es'],GTM:['es'],HND:['es'],SLV:['es'],NIC:['es'],CRI:['es'],PAN:['es'],CUB:['es'],DOM:['es'],COL:['es'],VEN:['es'],ECU:['es'],PER:['es'],BOL:['es'],PRY:['es'],CHL:['es'],ARG:['es'],URY:['es'],THA:['th'],EGY:['ar'],SAU:['ar'],ARE:['ar'],QAT:['ar'],KWT:['ar'],OMN:['ar'],BHR:['ar'],JOR:['ar'],LBN:['ar'],SYR:['ar'],IRQ:['ar'],PSE:['ar'],MAR:['ar'],DZA:['ar'],TUN:['ar'],LBY:['ar'],YEM:['ar'],GBR:['en'],IRL:['en'],USA:['en'],CAN:['en','fr'],AUS:['en'],NZL:['en']};
 export function languageSuggestions(code){return COUNTRY_LANGUAGES[code]||[];}

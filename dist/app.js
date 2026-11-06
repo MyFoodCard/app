@@ -1,7 +1,8 @@
-import {DIETS,LANGUAGES,emptyProfile,cleanProfile,requirementCount,searchIngredients,addIngredient,toggleItem,countryAt,languageSuggestions} from './domain.js';
+import {DIETS,LANGUAGES,emptyProfile,cleanProfile,requirementCount,searchIngredients,addIngredient,toggleItem,countrySuggestions,languageSuggestions} from './domain.js';
 import {translations} from './translations.js';
 import {createShareUrl,readSharedProfile} from './sharing.js';
-import {cardMarkup} from './card.js';
+import {cardMarkup,cardSummary} from './card.js';
+import {qrSvg} from './qr.js';
 import {PROFILE_KEY,LEGACY_PROFILE_KEYS,loadProfile} from './profile-storage.js';
 import {bindPickerDismissal} from './picker-events.js';
 const $=id=>document.getElementById(id);
@@ -15,7 +16,7 @@ function activeProfile(){return sharedProfile||(sample?{...profile,mustAvoid:['f
 function buildOptions(){
   $('diet-options').innerHTML=DIETS.map(key=>'<label class="chip"><input type="checkbox" data-group="diets" aria-label="'+escape(english.diets[key].label)+'" value="'+key+'"><span>'+escape(english.diets[key].label)+'</span></label>').join('');
   for(const root of document.querySelectorAll('[data-food-group]'))foodPickers.push(createIngredientPicker(root));
-  $('card-language').innerHTML=LANGUAGES.map(code=>'<option value="'+code+'">'+escape(translations[code].native)+' · '+escape(translations[code].english)+'</option>').join('');
+  $('card-language').innerHTML=LANGUAGES.map(code=>'<option value="'+code+'">'+escape(translations[code].native)+'</option>').join('');
 }
 function syncEditor(){
   $('cross-contact').checked=profile.crossContact;
@@ -86,16 +87,18 @@ function createIngredientPicker(root){
 }
 function renderCard(){
   const p=activeProfile(),t=translations[p.language];
-  $('food-card').innerHTML=cardMarkup(p,sample);
+  const controls=$('card-controls');
+  $('food-card').innerHTML=cardMarkup(p,sample,requirementCount(p)?createShareUrl(p,new URL('./',window.location.href).href):'');
+  $('food-card').querySelector('.card-lang').replaceWith(controls);
   $('food-card').lang=p.language;$('food-card').dir=t.dir;
   $('sample-banner').hidden=!sample;
   $('shared-banner').hidden=!sharedProfile;
   document.body.classList.toggle('viewing-shared',Boolean(sharedProfile));
   $('location-button').hidden=Boolean(sharedProfile);
-  $('share-status').textContent='Anyone with the link can read the shared preferences.';
+  $('share-status').textContent='Anyone with the link or QR code can read these preferences.';
   const count=requirementCount(p);
   $('selected-count').textContent=count?count+' selected':'Your personal card';
-  $('present-button').disabled=!count;$('print-button').disabled=!count;$('share-button').disabled=!count;
+  $('present-button').disabled=!count;$('copy-text-button').disabled=!count;$('share-button').disabled=!count;
   $('sample-button')?.addEventListener('click',()=>{sample=true;renderCard();});
 }
 function edit(){sample=false;save();renderCard();}
@@ -108,7 +111,7 @@ function loadSharedLink(){
   try{sharedProfile=readSharedProfile(window.location.hash);}
   catch(error){sharedProfile=null;$('link-message').textContent=error.message+' Your saved preferences have not changed.';$('link-message').hidden=false;}
   syncEditor();renderCard();
-  if(sharedProfile||!$('link-message').hidden)viewCard(true);
+  if(sharedProfile)showRestaurantCard();
 }
 loadSharedLink();
 window.addEventListener('hashchange',loadSharedLink);
@@ -118,10 +121,10 @@ function leaveSharedCard(){
   $('link-message').hidden=true;$('location-result').hidden=true;
   syncEditor();renderCard();
 }
-$('exit-shared').addEventListener('click',()=>{leaveSharedCard();viewCard(false);});
+$('exit-shared').addEventListener('click',()=>{leaveSharedCard();});
 $('use-shared').addEventListener('click',()=>{
   if(!sharedProfile)return;
-  profile=cleanProfile(sharedProfile);save();leaveSharedCard();viewCard(true);
+  profile=cleanProfile(sharedProfile);save();leaveSharedCard();
 });
 $('share-button').addEventListener('click',async()=>{
   const url=createShareUrl(activeProfile(),new URL('./',window.location.href).href);
@@ -137,17 +140,47 @@ document.querySelectorAll('[data-group="diets"]').forEach(input=>input.addEventL
   profile.diets=toggleItem(profile.diets,input.value,input.checked);edit();
 }));
 $('cross-contact').addEventListener('change',event=>{profile.crossContact=event.target.checked;edit();});
-$('card-language').addEventListener('change',event=>{if(sharedProfile)sharedProfile.language=event.target.value;else{profile.language=event.target.value;save();}renderCard();$('location-result').hidden=true;});
-$('exit-sample').addEventListener('click',()=>{sample=false;renderCard();});
-function viewCard(show){document.querySelector('.workspace').classList.toggle('show-card',show);$('edit-tab').setAttribute('aria-pressed',String(!show));$('card-tab').setAttribute('aria-pressed',String(show));}
-$('edit-tab').addEventListener('click',()=>viewCard(false));$('card-tab').addEventListener('click',()=>viewCard(true));
-$('present-button').addEventListener('click',()=>{
-  const p=activeProfile(),t=translations[p.language];
-  $('present-card').innerHTML='<article class="food-card" lang="'+p.language+'" dir="'+t.dir+'">'+cardMarkup(p,sample)+'</article>';
-  $('present-dialog').showModal();
+function setCardLanguage(code){
+  if(sharedProfile)sharedProfile.language=code;else{profile.language=code;save();}
+  $('card-language').value=code;renderCard();$('location-result').hidden=true;
+  if($('present-dialog').open)renderPresentation();
+}
+$('card-language').addEventListener('change',event=>setCardLanguage(event.target.value));
+$('present-card').addEventListener('change',event=>{
+  if(event.target.matches('[data-present-language]'))setCardLanguage(event.target.value);
 });
+$('exit-sample').addEventListener('click',()=>{sample=false;renderCard();});
+function renderPresentation(){
+  const p=activeProfile(),t=translations[p.language];
+  $('present-card').innerHTML='<article class="food-card" lang="'+p.language+'" dir="'+t.dir+'">'+cardMarkup(p,sample,createShareUrl(p,new URL('./',window.location.href).href))+'</article>';
+  const select=document.createElement('select');select.className='card-language-select';
+  select.dataset.presentLanguage='';select.setAttribute('aria-label','Card language');
+  select.innerHTML=$('card-language').innerHTML;select.value=p.language;
+  $('present-card').querySelector('.card-lang').replaceWith(select);
+}
+function showRestaurantCard(){
+  renderPresentation();
+  if(!$('present-dialog').open)$('present-dialog').showModal();
+}
+$('present-button').addEventListener('click',showRestaurantCard);
 $('close-present').addEventListener('click',()=>$('present-dialog').close());
-$('print-button').addEventListener('click',()=>window.print());
+$('copy-text-button').addEventListener('click',async()=>{
+  const p=activeProfile(),text=cardSummary(p);
+  try{
+    await navigator.clipboard.writeText(text);
+    $('share-status').textContent='Summary copied in '+translations[p.language].english+'. Ready to paste into a form or message.';
+  }catch{
+    const field=$('summary-text');field.value=text;field.lang=p.language;field.dir=translations[p.language].dir;
+    $('text-dialog').showModal();field.focus();field.select();
+  }
+});
+$('close-text').addEventListener('click',()=>$('text-dialog').close());
+for(const id of ['food-card','present-card'])$(id).addEventListener('click',event=>{
+  if(!event.target.closest('.card-qr'))return;
+  $('large-qr').innerHTML=qrSvg(createShareUrl(activeProfile(),new URL('./',window.location.href).href));
+  $('qr-dialog').showModal();
+});
+$('close-qr').addEventListener('click',()=>$('qr-dialog').close());
 $('about-button').addEventListener('click',()=>$('about-dialog').showModal());
 $('close-about').addEventListener('click',()=>$('about-dialog').close());
 $('reset-button').addEventListener('click',()=>{
@@ -186,14 +219,15 @@ $('location-button').addEventListener('click',async()=>{
     try{
       const response=await fetch('./countries.json');if(!response.ok)throw new Error('Map unavailable');
       const {countries}=await response.json();
-      const country=countryAt(position.coords.longitude,position.coords.latitude,countries);
-      if(!country){locationMessage('No reliable country match. Choose a language from the list.');return;}
-      const suggestions=languageSuggestions(country.code);
-      if(!suggestions.length){locationMessage('Near '+country.name+'. A local language for this country is not included yet. Choose a language the staff understands.');return;}
-      locationMessage('Near '+country.name+' · choose a suggested language. This is an approximate match.');
+      const matches=countrySuggestions(position.coords.longitude,position.coords.latitude,countries);
+      if(!matches.length){locationMessage('Your location is outside the areas covered by the offline map. Choose a language from the list.');return;}
+      const suggestions=[...new Set(matches.flatMap(({country})=>languageSuggestions(country.code)))];
+      const names=matches.map(({country})=>country.name).join(' / ');
+      if(!suggestions.length){locationMessage('Near '+names+'. A local language for this country is not included yet. Choose a language the staff understands.');return;}
+      locationMessage((matches[0].approximate?'Near ':'In or near ')+names+' · choose a suggested language.'+(matches[0].approximate?' The offline map has simplified coastlines; this is a nearby-country suggestion.':' This is an approximate match.')+(position.coords.accuracy>10000?' Your device reports a low-accuracy location.':''));
       for(const code of suggestions){
         const choice=document.createElement('button');choice.type='button';choice.textContent=translations[code].native;
-        choice.addEventListener('click',()=>{profile.language=code;save();syncEditor();renderCard();locationMessage('Card language set to '+translations[code].english+'. You can change it at any time.');});
+        choice.addEventListener('click',()=>{setCardLanguage(code);locationMessage('Card language set to '+translations[code].english+'. You can change it at any time.');});
         $('location-result').append(choice);
       }
     }catch{locationMessage('The offline map is unavailable. Connect once to download it, or choose a language yourself.');}

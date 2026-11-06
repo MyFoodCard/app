@@ -144,7 +144,10 @@ th:make('ไทย','Thai','ltr',
 'ไม่มีแอลกอฮอล์ รวมถึงในซอสและการปรุงอาหาร'])
 };
 
+const qrLabels={en:'Scan card',sk:'Naskenovať kartu',cs:'Naskenovat kartu',de:'Karte scannen',fr:'Scanner la carte',es:'Escanear tarjeta',ar:'مسح البطاقة',th:'สแกนการ์ด'};
+
 for (const [code,t] of Object.entries(translations)) {
+  t.qrLabel=qrLabels[code];
   const extra=ingredientTranslations[code];
   t.ingredients={...t.allergens,...extra.foods};
   t.allergens=Object.fromEntries(ALLERGENS.map(key=>[key,t.ingredients[key]]));

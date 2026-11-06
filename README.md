@@ -11,8 +11,10 @@ A mobile-first restaurant card for dietary requirements and food allergies. The 
 - Each section uses one searchable catalog of 44 ingredients, including common allergens, flaxseed/linseed, additional seeds and legumes, individual nuts, white sugar, trehalose and lactose. Selected chips remain visible. Search or Browse all opens one scrollable list; selected ingredients are excluded from add results. Cross-contact instructions apply only to Must avoid. Adding an optional ingredient to Must avoid moves it there; it cannot appear in both sections.
 - Vegan, vegetarian, halal, kosher, gluten-free, no pork and no alcohol requirements remain independent of ingredient exclusions. Selecting one ingredient never automatically selects related ingredients.
 - English, Slovak, Czech, German, French, Spanish, Arabic (RTL) and Thai card packs bundled offline.
-- Compact restaurant card and readable presentation view; print/PDF through the browser and JSON profile export/import.
-- Copy a shareable link containing the selected requirements and card language. Recipients view the shared card without changing their saved profile, and can explicitly choose to adopt it.
+- A single workspace without mobile tabs; language selectors live in the preview and presentation card headers.
+- Compact monospace interface with charcoal, lime, violet and coral colors; system-aware dark/light themes and a readable restaurant presentation. JSON profile export/import and native browser print remain available; there is no Print button.
+- Copy a shareable link or scan the corner QR code containing the selected requirements and card language. Both open directly in the restaurant presentation; closing it reveals the shared-card controls. Recipients’ saved profiles remain untouched unless they explicitly adopt the preferences. Tap the QR code to enlarge it, especially for longer profiles.
+- Copy text produces a short summary in the current card language with distinct Must avoid and Avoid if possible lists, dietary labels and any cross-contact instruction. If clipboard access fails, a selectable text dialog is provided.
 - System-aware light/dark appearance with a saved manual override. Printed cards always use the light palette.
 - Opt-in device location and offline point-in-polygon country lookup. The user confirms a suggested language; unsupported countries never silently default to a supposed local language.
 - Service worker pre-caches the complete application and map. Wait for the **Ready offline** indicator before travel. Install through the browser's add-to-home-screen flow.
@@ -21,7 +23,7 @@ This is a functional early prototype. Translations are authored drafts and have 
 
 ## Development
 
-Zero third-party runtime dependencies; standard HTML, CSS and JavaScript modules. No build step.
+Standard HTML, CSS and JavaScript modules with no build step or external runtime requests. A vendored copy of Project Nayuki’s QR encoder v1.8.0 (MIT) generates QR images locally. The pinned upstream commit is `720f62bddb7226106071d4728c292cb1df519ceb`; its license is retained in `dist/vendor/qrcodegen.js`. It was transpiled from the official TypeScript source using Node’s `stripTypeScriptTypes` transform, with one ES module export added. No compiler is needed to run or deploy the app.
 
 Requires Node 18+ for checks:
 
@@ -50,14 +52,15 @@ The first visit needs connectivity. Browser storage can be cleared or evicted; e
 
 No free-text medical notes are silently translated. The shipped vocabulary is explicit and finite. Sample mode is labeled and does not overwrite a saved profile.
 
-Location lookup uses generalized Natural Earth 1:110m polygons. Coastal locations, small islands and borders may not resolve correctly. A country does not determine which language restaurant staff understand. Manual language selection is always available.
+Location lookup uses generalized Natural Earth 1:110m polygons. If a point falls outside the polygons, nearby countries within 25 km of their mapped boundaries are offered as approximate suggestions, including multiple candidates when appropriate. This covers common coastal gaps without selecting a language automatically. Small islands, coarse device locations and places farther from the mapped boundaries may still need manual selection. A country does not determine which language restaurant staff understand. Manual language selection is always available.
 
 ## Source layout
 
 - `dist/app.js`: UI, storage, import/export, location workflow.
 - `dist/domain.js`: profile validation and geography logic.
 - `dist/profile-storage.js`: local profile migration and version isolation.
-- `dist/card.js`: shared rendering for the preview, presentation and print card.
+- `dist/card.js`: shared card rendering and plain-text summaries.
+- `dist/qr.js`, `dist/vendor/qrcodegen.js`: local QR rendering and vendored encoder.
 - `dist/sharing.js`: versioned share-link encoding and strict decoding.
 - `dist/theme.js`: first-paint theme, system preference changes and saved appearance.
 - `dist/translations.js`, `dist/ingredient-translations.js`: card language catalog and ingredient vocabulary.
