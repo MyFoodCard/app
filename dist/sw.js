@@ -1,6 +1,6 @@
 const CACHE_PREFIX='myfoodcard-'+encodeURIComponent(new URL(self.registration.scope).pathname)+'-';
-const CACHE=CACHE_PREFIX+'v14';
-const FILES=['./','./index.html','./styles.css','./app.js','./picker-events.js','./sheet-dismiss.js','./theme.js','./sharing.js','./profile-storage.js','./card.js','./qr.js','./vendor/qrcodegen.js','./domain.js','./translations.js','./ingredient-translations.js','./countries.json','./icon.svg','./manifest.webmanifest'];
+const CACHE=CACHE_PREFIX+'v15';
+const FILES=['./','./index.html','./styles.css','./app.js','./picker-events.js','./sheet-dismiss.js','./theme.js','./sharing.js','./profile-storage.js','./card.js','./qr.js','./vendor/qrcodegen.js','./domain.js','./translations.js','./ui-translations.js','./i18n.js','./ingredient-translations.js','./countries.json','./icon.svg','./manifest.webmanifest'];
 const urls=FILES.map(file=>new URL(file,self.registration.scope).href);
 self.addEventListener('install',event=>event.waitUntil((async()=>{
   const cache=await caches.open(CACHE);

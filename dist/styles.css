@@ -41,6 +41,7 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
+html{background:var(--paper)}
 [hidden]{display:none!important}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.6}
 button,input,select{font:inherit}
@@ -51,11 +52,11 @@ button,a,input,select,summary,[tabindex]{-webkit-tap-highlight-color:transparent
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 button:not(:disabled):active{transform:translateY(1px)}
 h1,h2,h3,p{margin:0}
-.site-header{max-width:1280px;margin:auto;min-height:76px;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line)}
+.site-header{max-width:1280px;margin:auto;min-height:76px;padding:calc(14px + env(safe-area-inset-top)) 28px 14px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);background:var(--paper)}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:21px;font-weight:700;letter-spacing:-1px}
 .brand img{width:34px;height:34px}
 .brand-dot{color:var(--accent)}
-.header-right{display:flex;align-items:center;gap:24px}
+.header-right{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .status{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
 .status-dot{width:7px;height:7px;background:var(--muted)}
 .status.ready .status-dot{background:var(--accent)}
@@ -74,7 +75,7 @@ h1 em{font:inherit;color:var(--accent)}
 .section-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .section-top h2{font-size:15px;line-height:1.4;font-weight:700;letter-spacing:-.4px}
 
-.save-status{font-size:10px;margin-left:auto;color:var(--muted)}
+.save-status{font-size:10px;margin-inline-start:auto;color:var(--muted)}
 .muted{color:var(--muted)}
 fieldset{border:0;padding:0;margin:22px 0 0;min-width:0}
 legend{font-size:14px;font-weight:700;padding:0}
@@ -85,7 +86,7 @@ legend{font-size:14px;font-weight:700;padding:0}
 .chip span{border:1px solid var(--line);border-radius:3px;padding:10px;color:var(--muted);font-size:12px;min-height:42px;display:flex;align-items:center}
 .chip:hover span{border-color:var(--accent);color:var(--ink)}
 .chip input:checked+span{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
-.chip input:checked+span:before{content:'✓';margin-right:6px}
+.chip input:checked+span:before{content:'✓';margin-inline-end:6px}
 .chip input:focus-visible+span{outline:3px solid var(--focus);outline-offset:3px}
 .ingredient-fieldset{border-top:1px solid var(--line);padding-top:20px;margin-top:22px}
 .ingredient-fieldset legend{float:left;width:100%;margin-bottom:3px}
@@ -117,7 +118,7 @@ input::placeholder{color:var(--muted);opacity:1}
 .local-note{margin-top:22px;padding-top:16px;border-top:1px dashed var(--line);font-size:11px;color:var(--muted)}
 .local-note strong{font-weight:600;color:var(--ink)}
 .profile-actions{display:flex;gap:14px;align-items:center;margin-top:6px;flex-wrap:wrap}
-.quiet{color:var(--muted);margin-left:auto}
+.quiet{color:var(--muted);margin-inline-start:auto}
 .message{font-size:12px;margin-top:8px;color:var(--allergy)}
 .message:empty{display:none}
 
@@ -178,7 +179,7 @@ footer>span{font-weight:700}
 dialog{border:1px solid var(--line);border-radius:4px;color:var(--ink);background:var(--paper);max-height:calc(100dvh - 32px);padding:26px;box-shadow:8px 8px 0 #0006}
 dialog::backdrop{background:#090b15bd}
 #present-dialog{width:min(680px,calc(100vw - 24px));padding:20px}
-.card-drag-handle{display:none}
+.card-drag-bar{display:none}
 .card-close{display:inline-grid;place-items:center;flex-shrink:0;width:44px;min-height:44px;border:0;border-radius:3px;background:transparent;color:var(--muted);font-size:26px;line-height:1;padding:0}
 .card-close:hover{background:var(--accent-soft);color:var(--ink)}
 #present-card .food-card{box-shadow:none}
@@ -209,7 +210,9 @@ dialog::backdrop{background:#090b15bd}
   #present-dialog{width:100%;max-width:none;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0;padding:16px;background:var(--card);overscroll-behavior:contain;transform:translateY(var(--sheet-drag,0px));transition:transform .16s ease-out}
   #present-dialog.is-dragging{transition:none}
   body:has(#present-dialog[open]){overflow:hidden}
-  .card-drag-handle{display:flex;align-items:center;justify-content:center;position:sticky;top:-16px;z-index:2;width:96px;height:28px;margin:-12px auto 4px;padding:0;border:0;border-radius:4px;background:var(--card);touch-action:none;user-select:none;cursor:grab}
+  .card-drag-bar{display:flex;justify-content:center;position:sticky;top:-16px;z-index:2;width:calc(100% + 32px);height:28px;margin:-12px -16px 4px;background:var(--card)}
+  #present-dialog [data-card-drag]{touch-action:none;user-select:none;cursor:grab}
+  .card-drag-handle{display:flex;align-items:center;justify-content:center;width:96px;height:28px;padding:0;border:0;border-radius:4px;background:transparent;cursor:grab}
   .card-drag-handle span{display:block;width:36px;height:4px;border-radius:4px;background:var(--muted)}
   .card-drag-handle:active{cursor:grabbing;transform:none}
   #present-card .food-card{padding:0;border:0;box-shadow:none}
@@ -252,7 +255,7 @@ dialog::backdrop{background:#090b15bd}
 .card-controls .location-button{border:1px solid var(--line);border-radius:3px;padding:0;width:44px;max-width:none;min-height:44px;flex-shrink:0;background:var(--card);color:var(--accent);text-align:center}
 .card-controls .location-button span{font-size:23px}
 @media(max-width:430px){.card-brand{flex-wrap:nowrap;gap:8px}.card-logo{font-size:12px;letter-spacing:-.8px;flex-shrink:0}.card-controls .card-language-select{width:100%;max-width:148px;padding-inline:4px}.card-controls{flex-shrink:1}}
-@media print{.card-controls .location-button,.card-close,.card-drag-handle{display:none}.card-language-select{appearance:none;border:0;padding:0;min-height:0}}
+@media print{.card-controls .location-button,.card-close,.card-drag-bar{display:none}.card-language-select{appearance:none;border:0;padding:0;min-height:0}}
 
 /* Preferences are the only inline workspace. The card opens on demand. */
 .floating-card{position:fixed;z-index:20;inset-inline-end:max(20px,env(safe-area-inset-right));bottom:calc(20px + env(safe-area-inset-bottom));min-width:182px;min-height:56px;padding:14px 18px;font-size:14px;box-shadow:4px 4px 0 var(--shadow)}
@@ -263,3 +266,27 @@ dialog::backdrop{background:#090b15bd}
 #location-result{margin:0 0 16px}
 @media(max-width:430px){.floating-card{inset-inline-end:14px;bottom:calc(14px + env(safe-area-inset-bottom));max-width:calc(100vw - 28px)}main{padding-bottom:108px}}
 @media print{.floating-card{display:none!important}body:has(#present-dialog[open])>main{display:none}#present-dialog[open]{display:block!important;position:static;width:auto;max-width:none;height:auto;max-height:none;margin:0;padding:0;border:0;box-shadow:none;transform:none}}
+
+/* Localized controls stay usable at phone widths and in right-to-left scripts. */
+.brand,footer>span{direction:ltr}
+.theme-control select{max-width:180px}
+.floating-card .button-label{font-size:inherit;line-height:1.4}
+#present-button{max-width:calc(100vw - 28px)}
+:root[lang=ar],:root[lang=th]{letter-spacing:normal}
+:root[lang=ar] h1,:root[lang=th] h1{letter-spacing:normal}
+h1{overflow-wrap:anywhere;hyphens:auto}
+.close-button{right:auto;inset-inline-end:12px}
+@media(max-width:700px){
+  .site-header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 12px;padding:calc(12px + env(safe-area-inset-top)) 14px 12px}
+  .header-right{display:contents}
+  .site-header .brand{grid-column:1;grid-row:1;font-size:18px;gap:7px}
+  .site-header .brand img{width:28px;height:28px}
+  .site-header .status{grid-column:2;grid-row:1;max-width:132px;line-height:1.4;font-size:10px;justify-self:end}
+  .site-header .theme-control{grid-column:2;grid-row:2;justify-self:end}
+  .site-header .app-language-control{grid-column:1;grid-row:2;justify-self:start}
+  .site-header .app-language-control select{max-width:154px}
+  .theme-control select{max-width:126px}
+  .theme-control>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  #present-dialog{padding-top:calc(16px + env(safe-area-inset-top));padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+  .card-drag-bar{top:calc(-16px - env(safe-area-inset-top))}
+}

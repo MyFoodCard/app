@@ -85,7 +85,7 @@ for(const basePath of ['/', '/app/']) test('offline shell and translations work 
   const context={URL,Request,Response,Promise,caches:{open:async()=>cache,keys:async()=>[oldCache,otherAppCache,'unrelated'],delete:async name=>assert.equal(name,oldCache)},fetch:async()=>{networkRequests++;throw new Error('Offline');},self:{location:new URL(scope),registration:{scope},clients:{claim:async()=>{}},skipWaiting:async()=>{},addEventListener:(name,callback)=>{listeners[name]=callback;}}};
   vm.runInNewContext(await readFile(new URL('../dist/sw.js',import.meta.url),'utf8'),context);
   let promise;listeners.install({waitUntil:p=>{promise=p;}});await promise;
-  assert.equal(entries.size,18);
+  assert.equal(entries.size,20);
   listeners.activate({waitUntil:p=>{promise=p;}});await promise;
   let response;listeners.fetch({request:{method:'GET',url:scope,mode:'navigate'},respondWith:p=>{response=p;}});
   assert.match(await (await response).text(),/MyFoodCard/);
@@ -100,6 +100,10 @@ for(const basePath of ['/', '/app/']) test('offline shell and translations work 
   assert.match(await (await response).text(),/mustAvoid/);
   listeners.fetch({request:new Request(scope+'sheet-dismiss.js'),respondWith:p=>{response=p;}});
   assert.match(await (await response).text(),/bindSheetDismissal/);
+  listeners.fetch({request:new Request(scope+'ui-translations.js'),respondWith:p=>{response=p;}});
+  assert.match(await (await response).text(),/تفضيلاتك/);
+  listeners.fetch({request:new Request(scope+'i18n.js'),respondWith:p=>{response=p;}});
+  assert.match(await (await response).text(),/initialAppLanguage/);
   let ready;listeners.message({data:{type:'CHECK_CACHE'},ports:[{postMessage:value=>{ready=value.ready;}}],waitUntil:p=>{promise=p;}});await promise;assert.equal(ready,true);
   entries.delete(scope+'countries.json');listeners.message({data:{type:'CHECK_CACHE'},ports:[{postMessage:value=>{ready=value.ready;}}],waitUntil:p=>{promise=p;}});await promise;assert.equal(ready,false);
 });

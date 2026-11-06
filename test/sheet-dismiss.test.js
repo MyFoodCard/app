@@ -9,13 +9,19 @@ function setup(){
   dialog.close=()=>{dialog.open=false;dialog.closes++;dialog.dispatchEvent(new Event('close'));};
   dialog.style={setProperty:(key,value)=>styles.set(key,value),removeProperty:key=>styles.delete(key)};
   dialog.classList={add:key=>classes.add(key),remove:key=>classes.delete(key)};
-  handle.setPointerCapture=id=>captures.add(id);
-  handle.hasPointerCapture=id=>captures.has(id);
-  handle.releasePointerCapture=id=>captures.delete(id);
+  dialog.setPointerCapture=id=>captures.add(id);
+  dialog.hasPointerCapture=id=>captures.has(id);
+  dialog.releasePointerCapture=id=>captures.delete(id);
+  handle.setPointerCapture=dialog.setPointerCapture;
+  handle.hasPointerCapture=dialog.hasPointerCapture;
+  handle.releasePointerCapture=dialog.releasePointerCapture;
+  handle.getClientRects=()=>[{}];
+  handle.closest=()=>handle;
+  content.closest=()=>null;
   const send=(type,properties={},target=handle)=>{
     const event=new Event(type,{cancelable:true});
-    for(const [key,value] of Object.entries({pointerId:1,isPrimary:true,button:0,clientX:100,clientY:100,detail:1,...properties}))Object.defineProperty(event,key,{value});
-    target.dispatchEvent(event);
+    for(const [key,value] of Object.entries({target,pointerId:1,isPrimary:true,button:0,clientX:100,clientY:100,detail:1,...properties}))Object.defineProperty(event,key,{value});
+    (type==='click'&&target===handle?handle:dialog).dispatchEvent(event);
     return event;
   };
   bindSheetDismissal(dialog,handle);
@@ -72,4 +78,28 @@ test('Escape cancels an active drag before the native dialog closes',()=>{
   ui.dialog.dispatchEvent(new Event('cancel'));ui.dialog.close();
   ui.send('pointerup',{clientY:220});ui.send('click');
   assert.equal(ui.dialog.closes,1);assert.equal(ui.styles.size,0);
+});
+test('the full strip and newly rendered header descendants can start a drag',()=>{
+  for(const clientX of [4,180,370]){
+    const ui=setup(),header={closest:selector=>selector==='[data-card-drag]'?header:null};
+    ui.send('pointerdown',{clientX},header);ui.send('pointermove',{clientX,clientY:200},header);
+    ui.send('pointerup',{clientX,clientY:200},header);
+    assert.equal(ui.dialog.closes,1);
+  }
+});
+test('tapping the header does not close and interactive header controls keep native behavior',()=>{
+  const ui=setup(),header={closest:selector=>selector==='[data-card-drag]'?header:null};
+  ui.send('click',{},header);assert.equal(ui.dialog.open,true);
+  for(const tag of ['button','select','input','a','textarea','label']){
+    const control={tag,closest:selector=>selector==='[data-card-drag]'?header:control};
+    assert.equal(ui.send('pointerdown',{},control).defaultPrevented,false);
+    assert.equal(ui.captures.size,0);
+    ui.send('pointerup',{clientY:250},control);
+    assert.equal(ui.dialog.open,true);
+  }
+});
+test('desktop headers do not start an invisible drag',()=>{
+  const ui=setup();ui.handle.getClientRects=()=>[];
+  ui.send('pointerdown');ui.send('pointermove',{clientY:200});ui.send('pointerup',{clientY:200});
+  assert.equal(ui.dialog.open,true);assert.equal(ui.captures.size,0);
 });
