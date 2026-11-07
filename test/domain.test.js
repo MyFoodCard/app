@@ -82,11 +82,11 @@ for(const basePath of ['/', '/app/']) test('offline shell and translations work 
   const listeners={},entries=new Map(),scope='https://example.test'+basePath;
   const oldCache='myfoodcard-'+encodeURIComponent(basePath)+'-v1';
   const otherAppCache='myfoodcard-'+encodeURIComponent('/another-app/')+'-v1';
-  const cache={addAll:async requests=>{for(const req of requests){const url=new URL(req.url);const path=url.pathname.slice(basePath.length)||'index.html';const content=await readFile(new URL('../dist/'+path,import.meta.url),'utf8');entries.set(req.url,new Response(content));}},match:async request=>entries.get(typeof request==='string'?request:request.url)?.clone()};
+  const cache={addAll:async requests=>{for(const req of requests){const url=new URL(req.url);const path=url.pathname.slice(basePath.length)||'index.html';const content=await readFile(new URL('../dist/'+path,import.meta.url));entries.set(req.url,new Response(content));}},match:async request=>entries.get(typeof request==='string'?request:request.url)?.clone()};
   const context={URL,Request,Response,Promise,caches:{open:async()=>cache,keys:async()=>[oldCache,otherAppCache,'unrelated'],delete:async name=>assert.equal(name,oldCache)},fetch:async()=>{networkRequests++;throw new Error('Offline');},self:{location:new URL(scope),registration:{scope},clients:{claim:async()=>{}},skipWaiting:async()=>{},addEventListener:(name,callback)=>{listeners[name]=callback;}}};
   vm.runInNewContext(await readFile(new URL('../dist/sw.js',import.meta.url),'utf8'),context);
   let promise;listeners.install({waitUntil:p=>{promise=p;}});await promise;
-  assert.equal(entries.size,20);
+  assert.equal(entries.size,24);
   listeners.activate({waitUntil:p=>{promise=p;}});await promise;
   let response;listeners.fetch({request:{method:'GET',url:scope,mode:'navigate'},respondWith:p=>{response=p;}});
   assert.match(await (await response).text(),/MyFoodCard/);
@@ -105,6 +105,10 @@ for(const basePath of ['/', '/app/']) test('offline shell and translations work 
   assert.match(await (await response).text(),/تفضيلاتك/);
   listeners.fetch({request:new Request(scope+'i18n.js'),respondWith:p=>{response=p;}});
   assert.match(await (await response).text(),/initialAppLanguage/);
+  listeners.fetch({request:new Request(scope+'install.js'),respondWith:p=>{response=p;}});
+  assert.match(await (await response).text(),/bindInstallButton/);
+  listeners.fetch({request:new Request(scope+'icon-192.png'),respondWith:p=>{response=p;}});
+  assert.equal(Buffer.from(await (await response).arrayBuffer()).readUInt32BE(16),192);
   let ready;listeners.message({data:{type:'CHECK_CACHE'},ports:[{postMessage:value=>{ready=value.ready;}}],waitUntil:p=>{promise=p;}});await promise;assert.equal(ready,true);
   entries.delete(scope+'countries.json');listeners.message({data:{type:'CHECK_CACHE'},ports:[{postMessage:value=>{ready=value.ready;}}],waitUntil:p=>{promise=p;}});await promise;assert.equal(ready,false);
 });
@@ -118,4 +122,12 @@ test('installation paths stay within the GitHub Pages project',async()=>{
   assert.equal(new URL(manifest.scope,manifestUrl).pathname,'/app/');
   assert.equal(new URL(manifest.id,start).pathname,'/app/');
   for(const icon of manifest.icons)assert.ok(new URL(icon.src,manifestUrl).pathname.startsWith('/app/'));
+  for(const size of [192,512]){
+    const icon=manifest.icons.find(icon=>icon.type==='image/png'&&icon.sizes===size+'x'+size);
+    assert.ok(icon,'install icon '+size);
+    const png=await readFile(new URL('../dist/'+icon.src,import.meta.url));
+    assert.equal(png.subarray(1,4).toString(),'PNG');assert.equal(png.readUInt32BE(16),size);assert.equal(png.readUInt32BE(20),size);
+  }
+  const appleIcon=await readFile(new URL('../dist/icon-180.png',import.meta.url));
+  assert.equal(appleIcon.readUInt32BE(16),180);assert.equal(appleIcon.readUInt32BE(20),180);
 });

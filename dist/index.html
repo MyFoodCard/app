@@ -15,7 +15,7 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 <script src="./theme.js"></script>
-<link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="manifest" href="./manifest.webmanifest"><link rel="stylesheet" href="./styles.css">
+<link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icon-180.png" sizes="180x180"><link rel="manifest" href="./manifest.webmanifest"><link rel="stylesheet" href="./styles.css">
 <script type="module" src="./app.js"></script>
 </head>
 <body>
@@ -29,6 +29,7 @@ if ('serviceWorker' in navigator) {
 <p class="eyebrow" data-i18n="eyebrow">YOUR FOOD. YOUR RULES.</p>
 <h1><span data-i18n="headline">Your food needs.</span><br><em data-i18n="headlineLocal">In the local language.</em></h1>
 <p class="intro-copy" data-i18n="intro">Set your preferences once. Show or share your card in the local language.</p>
+<button id="install-button" class="button secondary install-button" type="button" aria-haspopup="dialog" hidden><span aria-hidden="true">↓</span> <span data-i18n="installApp">Install app</span></button>
 </section>
 <p id="link-message" class="location-result" role="alert" hidden></p>
 <div class="workspace">
@@ -63,6 +64,15 @@ if ('serviceWorker' in navigator) {
 <dialog id="text-dialog" aria-labelledby="text-title"><h2 id="text-title" data-i18n="copyTitle">Copy your summary</h2><p data-i18n="copyHelp">Copy this text into a form or message.</p><label class="sr-only" for="summary-text" data-i18n="summary">Preference summary</label><textarea id="summary-text" readonly rows="8"></textarea><button id="close-text" class="button secondary" data-i18n="done">Done</button></dialog>
 <dialog id="qr-dialog" aria-labelledby="qr-title"><h2 id="qr-title" data-i18n="qrTitle">Scan to open this card</h2><div id="large-qr"></div><p data-i18n="qrPrivacy">Anyone who scans this code can read the preferences on this card.</p><button id="close-qr" class="button secondary" data-i18n="done">Done</button></dialog>
 <dialog id="about-dialog" aria-labelledby="about-title"><button id="close-about" class="close-button" aria-label="Close information" data-i18n-label="closeInfo">✕</button><p class="eyebrow">MYFOODCARD</p><h2 id="about-title" data-i18n="aboutTitle">A small card. A clearer conversation.</h2><ol><li data-i18n="about1">Make it yours. Choose your food requirements. Edits save automatically in this browser.</li><li data-i18n="about2">Choose the card language yourself or request a location-based suggestion. Your coordinates aren’t sent to our servers.</li><li data-i18n="about3">Show the card to restaurant staff, scan its QR code or copy its link. Copy text gives you a summary for forms and messages.</li></ol><p data-i18n="aboutOffline">Wait for “Ready offline” before travelling. Add the app to your home screen from your browser. Offline use needs an initial online visit and retained browser data. Export a backup before clearing browser data.</p><p data-i18n="aboutLanguages">App and card languages can be chosen separately. Location suggestions are approximate.</p><p class="muted" data-i18n="credits">Location boundaries: Natural Earth (public domain). Translations are drafts awaiting professional review.</p></dialog>
+<dialog id="install-dialog" aria-labelledby="install-title">
+ <h2 id="install-title" data-i18n="installTitle">Install MyFoodCard</h2>
+ <p data-i18n="installIntro">Keep your card a tap away on your home screen.</p>
+ <ol data-install-platform="ios" hidden><li data-i18n="installIos1">Open this page in Safari and tap Share (the square with an upward arrow). It may be inside the More (…) menu.</li><li data-i18n="installIos2">Choose Add to Home Screen. Keep Open as Web App enabled if shown.</li><li data-i18n="installIos3">Tap Add, then open MyFoodCard from your home screen.</li></ol>
+ <ol data-install-platform="mac" hidden><li data-i18n="installMac1">In Safari, choose File → Add to Dock.</li><li data-i18n="installMac2">Choose Add, then open MyFoodCard from the Dock.</li></ol>
+ <ol data-install-platform="other" hidden><li data-i18n="installOther1">Open your browser’s menu and look for Install app or Add to Home screen.</li><li data-i18n="installOther2">If neither option appears, open this page in a browser that supports web apps, such as Chrome or Edge.</li></ol>
+ <p class="install-offline-note" data-i18n="installOffline">Before travelling, open the app online and wait for “Ready offline”.</p>
+ <button id="close-install" class="button secondary" type="button" data-i18n="done" autofocus>Done</button>
+</dialog>
 <noscript><p class="noscript">Enable JavaScript to configure and translate your card.</p></noscript>
 </body>
 </html>

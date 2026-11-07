@@ -113,7 +113,18 @@ export const uiTranslations = {
     "offlineReady": "Offline · card ready",
     "connectSetup": "Connect to finish setup",
     "offlineUnavailable": "Offline unavailable",
-    "offlineIncomplete": "Offline setup incomplete"
+    "offlineIncomplete": "Offline setup incomplete",
+    "installApp": "Install app",
+    "installTitle": "Install MyFoodCard",
+    "installIntro": "Keep your card a tap away on your home screen.",
+    "installIos1": "Open this page in Safari and tap Share (the square with an upward arrow). It may be inside the More (…) menu.",
+    "installIos2": "Choose Add to Home Screen. Keep Open as Web App enabled if shown.",
+    "installIos3": "Tap Add, then open MyFoodCard from your home screen.",
+    "installMac1": "In Safari, choose File → Add to Dock.",
+    "installMac2": "Choose Add, then open MyFoodCard from the Dock.",
+    "installOther1": "Open your browser’s menu and look for Install app or Add to Home screen.",
+    "installOther2": "If neither option appears, open this page in a browser that supports web apps, such as Chrome or Edge.",
+    "installOffline": "Before travelling, open the app online and wait for “Ready offline”."
   },
   "sk": {
     "skip": "Prejsť na preferencie",
@@ -228,7 +239,18 @@ export const uiTranslations = {
     "offlineReady": "Offline · karta pripravená",
     "connectSetup": "Pripojte sa na dokončenie",
     "offlineUnavailable": "Offline nie je dostupné",
-    "offlineIncomplete": "Príprava offline nie je dokončená"
+    "offlineIncomplete": "Príprava offline nie je dokončená",
+    "installApp": "Nainštalovať appku",
+    "installTitle": "Nainštalovať MyFoodCard",
+    "installIntro": "Majte kartu poruke na ploche zariadenia.",
+    "installIos1": "Otvorte túto stránku v Safari a klepnite na Zdieľať (štvorec so šípkou nahor). Môže byť v ponuke Viac (…).",
+    "installIos2": "Vyberte Pridať na plochu. Ak sa zobrazí možnosť Otvoriť ako webovú apku, nechajte ju zapnutú.",
+    "installIos3": "Klepnite na Pridať a potom otvorte MyFoodCard z plochy.",
+    "installMac1": "V Safari vyberte Súbor → Pridať do Docku.",
+    "installMac2": "Vyberte Pridať a potom otvorte MyFoodCard z Docku.",
+    "installOther1": "V ponuke prehliadača vyhľadajte Nainštalovať aplikáciu alebo Pridať na plochu.",
+    "installOther2": "Ak sa nezobrazuje ani jedna možnosť, otvorte stránku v prehliadači s podporou webových aplikácií, napríklad Chrome alebo Edge.",
+    "installOffline": "Pred cestou otvorte aplikáciu online a počkajte na „Pripravené offline“."
   },
   "cs": {
     "skip": "Přejít na preference",
@@ -343,7 +365,18 @@ export const uiTranslations = {
     "offlineReady": "Offline · karta připravena",
     "connectSetup": "Připojte se pro dokončení",
     "offlineUnavailable": "Offline není dostupné",
-    "offlineIncomplete": "Příprava offline není dokončena"
+    "offlineIncomplete": "Příprava offline není dokončena",
+    "installApp": "Nainstalovat aplikaci",
+    "installTitle": "Nainstalovat MyFoodCard",
+    "installIntro": "Mějte kartu po ruce na ploše zařízení.",
+    "installIos1": "Otevřete tuto stránku v Safari a klepněte na Sdílet (čtverec se šipkou nahoru). Může být v nabídce Více (…).",
+    "installIos2": "Vyberte Přidat na plochu. Pokud se zobrazí možnost Otevřít jako webovou aplikaci, ponechte ji zapnutou.",
+    "installIos3": "Klepněte na Přidat a potom otevřete MyFoodCard z plochy.",
+    "installMac1": "V Safari vyberte Soubor → Přidat do Docku.",
+    "installMac2": "Vyberte Přidat a potom otevřete MyFoodCard z Docku.",
+    "installOther1": "V nabídce prohlížeče vyhledejte Nainstalovat aplikaci nebo Přidat na plochu.",
+    "installOther2": "Pokud se nezobrazuje ani jedna možnost, otevřete stránku v prohlížeči s podporou webových aplikací, například Chrome nebo Edge.",
+    "installOffline": "Před cestou otevřete aplikaci online a počkejte na „Připraveno offline“."
   },
   "de": {
     "skip": "Zu deinen Einstellungen",
@@ -458,7 +491,18 @@ export const uiTranslations = {
     "offlineReady": "Offline · Karte bereit",
     "connectSetup": "Zum Abschließen verbinden",
     "offlineUnavailable": "Offline nicht verfügbar",
-    "offlineIncomplete": "Offline-Einrichtung unvollständig"
+    "offlineIncomplete": "Offline-Einrichtung unvollständig",
+    "installApp": "App installieren",
+    "installTitle": "MyFoodCard installieren",
+    "installIntro": "Ihre Karte ist vom Startbildschirm aus mit einem Tippen erreichbar.",
+    "installIos1": "Öffnen Sie diese Seite in Safari und tippen Sie auf Teilen (Quadrat mit Pfeil nach oben). Diese Option befindet sich eventuell im Menü Mehr (…).",
+    "installIos2": "Wählen Sie Zum Home-Bildschirm. Lassen Sie Als Web-App öffnen aktiviert, falls angezeigt.",
+    "installIos3": "Tippen Sie auf Hinzufügen und öffnen Sie MyFoodCard vom Home-Bildschirm aus.",
+    "installMac1": "Wählen Sie in Safari Ablage → Zum Dock hinzufügen.",
+    "installMac2": "Wählen Sie Hinzufügen und öffnen Sie MyFoodCard über das Dock.",
+    "installOther1": "Suchen Sie im Browsermenü nach App installieren oder Zum Startbildschirm hinzufügen.",
+    "installOther2": "Falls keine der Optionen erscheint, öffnen Sie die Seite in einem Browser, der Web-Apps unterstützt, etwa Chrome oder Edge.",
+    "installOffline": "Öffnen Sie die App vor der Reise online und warten Sie auf „Offline bereit“."
   },
   "fr": {
     "skip": "Aller aux préférences",
@@ -573,7 +617,18 @@ export const uiTranslations = {
     "offlineReady": "Hors ligne · carte prête",
     "connectSetup": "Connectez-vous pour terminer",
     "offlineUnavailable": "Hors ligne indisponible",
-    "offlineIncomplete": "Préparation hors ligne incomplète"
+    "offlineIncomplete": "Préparation hors ligne incomplète",
+    "installApp": "Installer l’app",
+    "installTitle": "Installer MyFoodCard",
+    "installIntro": "Gardez votre carte à portée de main sur l’écran d’accueil.",
+    "installIos1": "Ouvrez cette page dans Safari et touchez Partager (le carré avec une flèche vers le haut). Cette option peut se trouver dans le menu Plus (…).",
+    "installIos2": "Choisissez Sur l’écran d’accueil. Laissez Ouvrir comme app web activé si cette option apparaît.",
+    "installIos3": "Touchez Ajouter, puis ouvrez MyFoodCard depuis l’écran d’accueil.",
+    "installMac1": "Dans Safari, choisissez Fichier → Ajouter au Dock.",
+    "installMac2": "Choisissez Ajouter, puis ouvrez MyFoodCard depuis le Dock.",
+    "installOther1": "Dans le menu du navigateur, cherchez Installer l’application ou Ajouter à l’écran d’accueil.",
+    "installOther2": "Si aucune option n’apparaît, ouvrez cette page dans un navigateur compatible avec les apps web, comme Chrome ou Edge.",
+    "installOffline": "Avant de voyager, ouvrez l’app en ligne et attendez « Prêt hors ligne »."
   },
   "es": {
     "skip": "Ir a tus preferencias",
@@ -688,7 +743,18 @@ export const uiTranslations = {
     "offlineReady": "Sin conexión · tarjeta lista",
     "connectSetup": "Conéctate para finalizar",
     "offlineUnavailable": "Modo sin conexión no disponible",
-    "offlineIncomplete": "Preparación sin conexión incompleta"
+    "offlineIncomplete": "Preparación sin conexión incompleta",
+    "installApp": "Instalar app",
+    "installTitle": "Instalar MyFoodCard",
+    "installIntro": "Ten tu tarjeta a un toque en la pantalla de inicio.",
+    "installIos1": "Abre esta página en Safari y toca Compartir (el cuadrado con una flecha hacia arriba). Puede estar dentro del menú Más (…).",
+    "installIos2": "Elige Añadir a pantalla de inicio. Mantén activada la opción Abrir como app web si aparece.",
+    "installIos3": "Toca Añadir y abre MyFoodCard desde la pantalla de inicio.",
+    "installMac1": "En Safari, elige Archivo → Añadir al Dock.",
+    "installMac2": "Elige Añadir y abre MyFoodCard desde el Dock.",
+    "installOther1": "Busca Instalar aplicación o Añadir a pantalla de inicio en el menú del navegador.",
+    "installOther2": "Si no aparece ninguna opción, abre esta página en un navegador compatible con apps web, como Chrome o Edge.",
+    "installOffline": "Antes de viajar, abre la app con conexión y espera a que aparezca «Lista sin conexión»."
   },
   "ar": {
     "skip": "انتقل إلى تفضيلاتك",
@@ -803,7 +869,18 @@ export const uiTranslations = {
     "offlineReady": "دون اتصال · البطاقة جاهزة",
     "connectSetup": "اتصل لإكمال الإعداد",
     "offlineUnavailable": "الاستخدام دون اتصال غير متاح",
-    "offlineIncomplete": "الإعداد دون اتصال غير مكتمل"
+    "offlineIncomplete": "الإعداد دون اتصال غير مكتمل",
+    "installApp": "تثبيت التطبيق",
+    "installTitle": "تثبيت MyFoodCard",
+    "installIntro": "اجعل بطاقتك في متناولك بلمسة من الشاشة الرئيسية.",
+    "installIos1": "افتح هذه الصفحة في Safari واضغط على مشاركة (المربع الذي بداخله سهم لأعلى). قد يكون الخيار داخل قائمة المزيد (…).",
+    "installIos2": "اختر إضافة إلى الشاشة الرئيسية. أبقِ خيار الفتح كتطبيق ويب مفعّلًا إن ظهر.",
+    "installIos3": "اضغط على إضافة، ثم افتح MyFoodCard من الشاشة الرئيسية.",
+    "installMac1": "في Safari، اختر ملف ثم إضافة إلى Dock.",
+    "installMac2": "اختر إضافة، ثم افتح MyFoodCard من Dock.",
+    "installOther1": "افتح قائمة المتصفح وابحث عن تثبيت التطبيق أو إضافة إلى الشاشة الرئيسية.",
+    "installOther2": "إذا لم يظهر أي من الخيارين، افتح الصفحة في متصفح يدعم تطبيقات الويب مثل Chrome أو Edge.",
+    "installOffline": "قبل السفر، افتح التطبيق أثناء الاتصال بالإنترنت وانتظر ظهور «جاهز دون اتصال»."
   },
   "th": {
     "skip": "ข้ามไปยังการตั้งค่า",
@@ -918,7 +995,18 @@ export const uiTranslations = {
     "offlineReady": "ออฟไลน์ · การ์ดพร้อมใช้",
     "connectSetup": "เชื่อมต่อเพื่อตั้งค่าให้เสร็จ",
     "offlineUnavailable": "ออฟไลน์ไม่พร้อมใช้",
-    "offlineIncomplete": "การตั้งค่าออฟไลน์ยังไม่เสร็จ"
+    "offlineIncomplete": "การตั้งค่าออฟไลน์ยังไม่เสร็จ",
+    "installApp": "ติดตั้งแอป",
+    "installTitle": "ติดตั้ง MyFoodCard",
+    "installIntro": "เปิดการ์ดได้ทันทีจากหน้าจอโฮม",
+    "installIos1": "เปิดหน้านี้ใน Safari แล้วแตะแชร์ (รูปสี่เหลี่ยมที่มีลูกศรชี้ขึ้น) ซึ่งอาจอยู่ในเมนูเพิ่มเติม (…)",
+    "installIos2": "เลือกเพิ่มไปยังหน้าจอโฮม หากมีตัวเลือกเปิดเป็นเว็บแอป ให้เปิดไว้",
+    "installIos3": "แตะเพิ่ม แล้วเปิด MyFoodCard จากหน้าจอโฮม",
+    "installMac1": "ใน Safari เลือกไฟล์ → เพิ่มไปยัง Dock",
+    "installMac2": "เลือกเพิ่ม แล้วเปิด MyFoodCard จาก Dock",
+    "installOther1": "เปิดเมนูเบราว์เซอร์แล้วมองหาติดตั้งแอปหรือเพิ่มไปยังหน้าจอโฮม",
+    "installOther2": "หากไม่มีทั้งสองตัวเลือก ให้เปิดหน้านี้ในเบราว์เซอร์ที่รองรับเว็บแอป เช่น Chrome หรือ Edge",
+    "installOffline": "ก่อนเดินทาง ให้เปิดแอปขณะเชื่อมต่ออินเทอร์เน็ตและรอจนขึ้นว่า “พร้อมใช้ออฟไลน์”"
   },
   "tr": {
     "skip": "Tercihlerinize geçin",
@@ -1033,7 +1121,18 @@ export const uiTranslations = {
     "offlineReady": "Çevrimdışı · kart hazır",
     "connectSetup": "Kurulumu tamamlamak için bağlanın",
     "offlineUnavailable": "Çevrimdışı kullanım yok",
-    "offlineIncomplete": "Çevrimdışı kurulum tamamlanmadı"
+    "offlineIncomplete": "Çevrimdışı kurulum tamamlanmadı",
+    "installApp": "Uygulamayı yükle",
+    "installTitle": "MyFoodCard uygulamasını yükle",
+    "installIntro": "Kartınız ana ekranınızda bir dokunuş uzağınızda olsun.",
+    "installIos1": "Bu sayfayı Safari’de açın ve Paylaş’a (yukarı ok bulunan kare) dokunun. Daha Fazla (…) menüsünün içinde olabilir.",
+    "installIos2": "Ana Ekrana Ekle’yi seçin. Web Uygulaması Olarak Aç seçeneği görünüyorsa açık bırakın.",
+    "installIos3": "Ekle’ye dokunun, ardından MyFoodCard uygulamasını ana ekranınızdan açın.",
+    "installMac1": "Safari’de Dosya → Dock’a Ekle’yi seçin.",
+    "installMac2": "Ekle’yi seçin, ardından MyFoodCard uygulamasını Dock’tan açın.",
+    "installOther1": "Tarayıcınızın menüsünde Uygulamayı yükle veya Ana ekrana ekle seçeneğini arayın.",
+    "installOther2": "Hiçbiri görünmüyorsa bu sayfayı Chrome veya Edge gibi web uygulamalarını destekleyen bir tarayıcıda açın.",
+    "installOffline": "Seyahatten önce uygulamayı internete bağlıyken açın ve “Çevrimdışı kullanıma hazır” yazısını bekleyin."
   },
   "id": {
     "skip": "Lewati ke preferensi Anda",
@@ -1148,7 +1247,18 @@ export const uiTranslations = {
     "offlineReady": "Offline · kartu siap",
     "connectSetup": "Hubungkan untuk menyelesaikan penyiapan",
     "offlineUnavailable": "Mode offline tidak tersedia",
-    "offlineIncomplete": "Penyiapan offline belum selesai"
+    "offlineIncomplete": "Penyiapan offline belum selesai",
+    "installApp": "Instal aplikasi",
+    "installTitle": "Instal MyFoodCard",
+    "installIntro": "Akses kartu dengan satu ketukan dari layar utama.",
+    "installIos1": "Buka halaman ini di Safari lalu ketuk Bagikan (kotak dengan panah ke atas). Opsi ini mungkin ada di menu Lainnya (…).",
+    "installIos2": "Pilih Tambah ke Layar Utama. Biarkan Buka sebagai App Web aktif jika ditampilkan.",
+    "installIos3": "Ketuk Tambah, lalu buka MyFoodCard dari layar utama.",
+    "installMac1": "Di Safari, pilih File → Tambahkan ke Dock.",
+    "installMac2": "Pilih Tambah, lalu buka MyFoodCard dari Dock.",
+    "installOther1": "Buka menu browser dan cari Instal aplikasi atau Tambahkan ke layar utama.",
+    "installOther2": "Jika kedua opsi tidak muncul, buka halaman ini di browser yang mendukung aplikasi web, seperti Chrome atau Edge.",
+    "installOffline": "Sebelum bepergian, buka aplikasi dengan internet dan tunggu “Siap offline”."
   },
   "fil": {
     "skip": "Lumaktaw sa mga pinili mo",
@@ -1263,6 +1373,17 @@ export const uiTranslations = {
     "offlineReady": "Offline · handa ang card",
     "connectSetup": "Kumonekta para matapos ang setup",
     "offlineUnavailable": "Hindi available ang offline",
-    "offlineIncomplete": "Hindi kumpleto ang offline setup"
+    "offlineIncomplete": "Hindi kumpleto ang offline setup",
+    "installApp": "I-install ang app",
+    "installTitle": "I-install ang MyFoodCard",
+    "installIntro": "Buksan ang card sa isang tap mula sa home screen.",
+    "installIos1": "Buksan ang pahinang ito sa Safari at i-tap ang Share (kahon na may pataas na arrow). Maaaring nasa menu na More (…) ito.",
+    "installIos2": "Piliin ang Add to Home Screen. Panatilihing naka-on ang Open as Web App kung lalabas ito.",
+    "installIos3": "I-tap ang Add, pagkatapos ay buksan ang MyFoodCard mula sa home screen.",
+    "installMac1": "Sa Safari, piliin ang File → Add to Dock.",
+    "installMac2": "Piliin ang Add, pagkatapos ay buksan ang MyFoodCard mula sa Dock.",
+    "installOther1": "Buksan ang menu ng browser at hanapin ang Install app o Add to Home screen.",
+    "installOther2": "Kung wala ang alinmang opsyon, buksan ang pahinang ito sa browser na sumusuporta sa web apps, tulad ng Chrome o Edge.",
+    "installOffline": "Bago bumiyahe, buksan ang app habang online at hintaying lumabas ang “Handa nang offline”."
   }
 };

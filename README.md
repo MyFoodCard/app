@@ -6,6 +6,8 @@ A mobile-first restaurant card for dietary requirements and food allergies. The 
 
 ## First version
 
+- Install app opens a native browser prompt when offered; otherwise it shows translated iPhone/iPad, Safari on Mac, or browser-menu instructions. It is hidden when running as an installed app and after an install event. Dismissed prompts are not shown again automatically. PNG home-screen icons are included.
+
 - Personal profile saved locally in the browser; no application account or server database.
 - Two ingredient sections: **Must avoid** for allergies and required exclusions, and **Avoid if possible** for optional exclusions. Dietary requirements remain separate. No per-ingredient severity dropdowns.
 - Each section uses one searchable catalog of 44 ingredients, including common allergens, flaxseed/linseed, additional seeds and legumes, individual nuts, white sugar, trehalose and lactose. Selected chips remain visible. Search or Browse all opens one scrollable list; selected ingredients are excluded from add results. Cross-contact instructions apply only to Must avoid. Adding an optional ingredient to Must avoid moves it there; it cannot appear in both sections.
@@ -64,6 +66,7 @@ Location lookup uses generalized Natural Earth 1:110m polygons. If a point falls
 - `dist/sharing.js`: versioned share-link encoding and strict decoding.
 - `dist/theme.js`: first-paint theme, system preference changes and saved appearance.
 - `dist/translations.js`, `dist/ingredient-translations.js`: card language catalog and ingredient vocabulary.
+- `dist/install.js`: optional installation prompt, platform instructions and standalone detection.
 - `dist/ui-translations.js`, `dist/i18n.js`: interface messages, browser-language negotiation, saved override and translated ingredient search.
 - `dist/sheet-dismiss.js`: header swipe handling with control exclusions, cancellation and tap/keyboard alternatives.
 - `dist/sw.js`: offline cache lifecycle.
