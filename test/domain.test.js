@@ -57,6 +57,7 @@ test('one search covers common allergens, additional allergens and intolerance i
 test('all supported cards have complete allergen, diet, instruction and tagline translations',()=>{
   for(const code of LANGUAGES){
     const t=translations[code];assert.ok(t.tagline);assert.ok(t.confirm);assert.ok(t.crossContact);
+    assert.ok(t.qrLabel,code);assert.ok(t.cardNotes.crossContact,code);assert.ok(t.cardNotes.confirm,code);
     for(const key of ALLERGENS)assert.ok(t.allergens[key]?.length>1,code+' '+key);
     for(const key of INGREDIENTS)assert.ok(t.ingredients[key]?.length>1,code+' '+key);
     for(const key of ['heading','mustAvoid','preferAvoid','mustIntro','preferIntro','crossContact'])assert.ok(t.intolerances[key],code+' '+key);
@@ -65,7 +66,7 @@ test('all supported cards have complete allergen, diet, instruction and tagline 
   assert.equal(translations.ar.dir,'rtl');assert.equal(translations.th.dir,'ltr');
 });
 test('offline lookup matches representative cities and leaves unsupported languages explicit',()=>{
-  for(const [lon,lat,code,language] of [[17.1077,48.1486,'SVK','sk'],[14.4378,50.0755,'CZE','cs'],[16.3738,48.2082,'AUT','de'],[13.405,52.52,'DEU','de'],[2.3522,48.8566,'FRA','fr'],[-3.7038,40.4168,'ESP','es'],[31.2357,30.0444,'EGY','ar'],[100.5018,13.7563,'THA','th'],[-.1276,51.5072,'GBR','en']]){
+  for(const [lon,lat,code,language] of [[32.85,39.93,'TUR','tr'],[107.62,-6.91,'IDN','id'],[121.05,14.65,'PHL','fil'],[17.1077,48.1486,'SVK','sk'],[14.4378,50.0755,'CZE','cs'],[16.3738,48.2082,'AUT','de'],[13.405,52.52,'DEU','de'],[2.3522,48.8566,'FRA','fr'],[-3.7038,40.4168,'ESP','es'],[31.2357,30.0444,'EGY','ar'],[100.5018,13.7563,'THA','th'],[-.1276,51.5072,'GBR','en']]){
     assert.equal(countryAt(lon,lat,countries)?.code,code);assert.ok(languageSuggestions(code).includes(language));
   }
   assert.deepEqual(languageSuggestions('JPN'),[]);assert.equal(countryAt(-35,0,countries),null);assert.equal(countryAt(NaN,0,countries),null);

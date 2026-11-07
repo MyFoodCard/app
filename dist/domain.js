@@ -6,7 +6,7 @@ export const ALLERGENS = [...COMMON_ALLERGENS,...MORE_ALLERGENS];
 export const INTOLERANCE_ONLY = ['lactose','fructose','sorbitol','onion','garlic','whitesugar','trehalose'];
 export const INGREDIENTS = [...ALLERGENS,...INTOLERANCE_ONLY];
 export const DIETS = ['vegan','vegetarian','halal','kosher','glutenfree','nopork','noalcohol'];
-export const LANGUAGES = ['en','sk','cs','de','fr','es','ar','th'];
+export const LANGUAGES = ['en','sk','cs','de','fr','es','ar','th','tr','id','fil'];
 export const emptyProfile = () => ({version:3,mustAvoid:[],avoidIfPossible:[],diets:[],crossContact:true,language:'en'});
 export const requirementCount = p => p.mustAvoid.length+p.avoidIfPossible.length+p.diets.length;
 export function cleanProfile(value) {
@@ -39,7 +39,7 @@ export function cleanProfile(value) {
   return {version:3,mustAvoid,avoidIfPossible,diets,crossContact:typeof value.crossContact==='boolean'?value.crossContact:true,language:LANGUAGES.includes(value.language)?value.language:'en'};
 }
 export function searchIngredients(query,labels){
-  const normalize=text=>text.normalize('NFD').replace(/\p{M}/gu,'').toLowerCase();
+  const normalize=text=>text.normalize('NFD').replace(/\p{M}/gu,'').toLowerCase().replace(/ı/g,'i');
   const words=normalize(query.trim()).split(/\s+/).filter(Boolean);
   return INGREDIENTS.filter(key=>words.every(word=>normalize(labels[key]).includes(word))).sort((a,b)=>labels[a].localeCompare(labels[b],'en'));
 }
@@ -90,5 +90,5 @@ export function countrySuggestions(lon,lat,countries){
     return {country,distanceKm,approximate:true};
   }).filter(match=>match.distanceKm<=25).sort((a,b)=>a.distanceKm-b.distanceKm).slice(0,3);
 }
-const COUNTRY_LANGUAGES={SVK:['sk'],CZE:['cs'],DEU:['de'],AUT:['de'],CHE:['de','fr'],LIE:['de'],FRA:['fr'],BEL:['fr','de'],LUX:['fr','de'],ESP:['es'],MEX:['es'],GTM:['es'],HND:['es'],SLV:['es'],NIC:['es'],CRI:['es'],PAN:['es'],CUB:['es'],DOM:['es'],COL:['es'],VEN:['es'],ECU:['es'],PER:['es'],BOL:['es'],PRY:['es'],CHL:['es'],ARG:['es'],URY:['es'],THA:['th'],EGY:['ar'],SAU:['ar'],ARE:['ar'],QAT:['ar'],KWT:['ar'],OMN:['ar'],BHR:['ar'],JOR:['ar'],LBN:['ar'],SYR:['ar'],IRQ:['ar'],PSE:['ar'],MAR:['ar'],DZA:['ar'],TUN:['ar'],LBY:['ar'],YEM:['ar'],GBR:['en'],IRL:['en'],USA:['en'],CAN:['en','fr'],AUS:['en'],NZL:['en']};
+const COUNTRY_LANGUAGES={TUR:['tr'],IDN:['id'],PHL:['fil','en'],SVK:['sk'],CZE:['cs'],DEU:['de'],AUT:['de'],CHE:['de','fr'],LIE:['de'],FRA:['fr'],BEL:['fr','de'],LUX:['fr','de'],ESP:['es'],MEX:['es'],GTM:['es'],HND:['es'],SLV:['es'],NIC:['es'],CRI:['es'],PAN:['es'],CUB:['es'],DOM:['es'],COL:['es'],VEN:['es'],ECU:['es'],PER:['es'],BOL:['es'],PRY:['es'],CHL:['es'],ARG:['es'],URY:['es'],THA:['th'],EGY:['ar'],SAU:['ar'],ARE:['ar'],QAT:['ar'],KWT:['ar'],OMN:['ar'],BHR:['ar'],JOR:['ar'],LBN:['ar'],SYR:['ar'],IRQ:['ar'],PSE:['ar'],MAR:['ar'],DZA:['ar'],TUN:['ar'],LBY:['ar'],YEM:['ar'],GBR:['en'],IRL:['en'],USA:['en'],CAN:['en','fr'],AUS:['en'],NZL:['en']};
 export function languageSuggestions(code){return COUNTRY_LANGUAGES[code]||[];}

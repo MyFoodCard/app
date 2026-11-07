@@ -5,7 +5,8 @@ import {uiTranslations} from './ui-translations.js';
 export const APP_LANGUAGE_KEY='myfoodcard.app-language.v1';
 export function browserLanguage(languages=[]){
   for(const language of languages){
-    const base=String(language).toLowerCase().split(/[-_]/)[0];
+    const tag=String(language).toLowerCase().split(/[-_]/)[0];
+    const base=({tl:'fil',in:'id'})[tag]||tag;
     if(LANGUAGES.includes(base))return base;
   }
   return 'en';

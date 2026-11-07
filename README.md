@@ -2,7 +2,7 @@
 
 **Your food needs, in the local language.**
 
-A mobile-first restaurant card for dietary requirements and food allergies. The app and card both support eight languages, with independent language selection. The app starts with the first supported browser language (English fallback); an explicit choice is remembered on the device.
+A mobile-first restaurant card for dietary requirements and food allergies. The app and card both support eleven languages (English, Slovak, Czech, German, French, Spanish, Arabic, Thai, Turkish, Indonesian and Filipino), with independent language selection. The app starts with the first supported browser language (English fallback); an explicit choice is remembered on the device.
 
 ## First version
 
@@ -72,7 +72,7 @@ Location lookup uses generalized Natural Earth 1:110m polygons. If a point falls
 
 ## Earlier requests and remaining work
 
-Implemented: offline PWA with local profiles; opt-in location suggestions; manual language choice; eight offline languages; dietary, ethical and religious requirements; Must avoid and Avoid if possible sections; compact card; dark mode; no name field or bottom card slogan; “Please share this information with the person preparing my food”; shareable preference snapshots; browser print/PDF; import/export; GitHub Pages deployment. Use without an account remains the default.
+Implemented: offline PWA with local profiles; opt-in location suggestions; manual language choice; eleven offline languages; dietary, ethical and religious requirements; Must avoid and Avoid if possible sections; compact card; dark mode; no name field or bottom card slogan; “Please share this information with the person preparing my food”; shareable preference snapshots; browser print/PDF; import/export; GitHub Pages deployment. Use without an account remains the default.
 
 Not implemented yet:
 

@@ -13,6 +13,12 @@ test('browser preference order, region tags and unsupported-language fallback',(
   assert.equal(browserLanguage(['ja-JP','sk-SK','en']),'sk');
   assert.equal(browserLanguage(['AR-eg']),'ar');
   assert.equal(browserLanguage(['cs_CZ']),'cs');
+  assert.equal(browserLanguage(['tr-TR']),'tr');
+  assert.equal(browserLanguage(['id-ID']),'id');
+  assert.equal(browserLanguage(['fil-PH']),'fil');
+  assert.equal(browserLanguage(['tl-PH','en-US']),'fil');
+  assert.equal(browserLanguage(['in-ID','en-US']),'id');
+  assert.equal(browserLanguage(['de-DE']),'de');
   assert.equal(browserLanguage(['pt-BR','ja-JP']),'en');
   assert.equal(browserLanguage([]),'en');
 });
@@ -41,6 +47,11 @@ test('every ingredient is searchable by its translated name and English alias',(
     assert.ok(localizedIngredientSearch(translations.en.ingredients[key],code).includes(key),code+' English '+key);
   }
   assert.ok(localizedIngredientSearch('lanove','sk').includes('flaxseed'));
+  assert.ok(localizedIngredientSearch('KETEN TOHUMU','tr').includes('flaxseed'));
+  assert.ok(localizedIngredientSearch('findik','tr').includes('hazelnut'));
+  assert.ok(localizedIngredientSearch('FINDIK','tr').includes('hazelnut'));
+  assert.ok(localizedIngredientSearch('kacang mete','id').includes('cashew'));
+  assert.ok(localizedIngredientSearch('kasoy','fil').includes('cashew'));
 });
 test('new profiles use the app language without changing an existing or shared card language',()=>{
   assert.equal(loadProfile({getItem:()=>null},'ar').profile.language,'ar');
